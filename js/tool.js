@@ -17,7 +17,27 @@ const DEFAULT_ASSETS = [
   { name: "חשבון מסחר עצמאי", amount: "" },
 ];
 
-let assets = DEFAULT_ASSETS.map((a) => ({ ...a }));
+// מפתח שמירה בדפדפן. הנתונים נשמרים מקומית במכשיר בלבד (localStorage) ולא נשלחים לשרת.
+const STORAGE_KEY = "worthone_assets_he";
+
+// טעינת הנכסים השמורים, או ברירת המחדל אם אין שמירה
+function loadAssets() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  } catch (e) { /* localStorage לא זמין – נמשיך עם ברירת המחדל */ }
+  return DEFAULT_ASSETS.map((a) => ({ ...a }));
+}
+
+// שמירת המצב הנוכחי בדפדפן
+function saveAssets() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(assets)); } catch (e) {}
+}
+
+let assets = loadAssets();
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -62,6 +82,7 @@ function renderRows() {
 /* ---------- הוספת שורה חדשה ---------- */
 function addAsset() {
   assets.push({ name: "", amount: "" });
+  saveAssets();
   renderRows();
   // מיקוד בשדה השם החדש לחוויית הזנה נוחה
   const rows = document.querySelectorAll(".asset-row .name");
@@ -102,6 +123,7 @@ function drawDonut(items, total) {
 
 /* ---------- חישוב מרכזי + עדכון התצוגה ---------- */
 function update() {
+  saveAssets(); // שמירה אוטומטית בכל שינוי
   // נכסים תקפים בלבד (בעלי סכום חיובי). צבע יציב לפי מיקום הנכס ברשימה,
   // כך שאותו נכס מקבל אותו צבע גם בשורת ההזנה, גם בגרף וגם במקרא.
   const items = assets
@@ -142,10 +164,21 @@ function update() {
     }).join("");
 }
 
+/* ---------- איפוס: מחיקת השמירה וחזרה לברירת המחדל ---------- */
+function resetAssets() {
+  if (!confirm("לאפס את כל הנתונים ולחזור לרשימה ההתחלתית?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  assets = DEFAULT_ASSETS.map((a) => ({ ...a }));
+  renderRows();
+  update();
+}
+
 /* ---------- אתחול ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderRows();
   update();
   const addBtn = $("#add-asset");
   if (addBtn) addBtn.addEventListener("click", addAsset);
+  const resetBtn = $("#reset-assets");
+  if (resetBtn) resetBtn.addEventListener("click", resetAssets);
 });

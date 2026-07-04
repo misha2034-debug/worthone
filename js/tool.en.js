@@ -16,7 +16,25 @@ const DEFAULT_ASSETS = [
   { name: "Self-managed trading account", amount: "" },
 ];
 
-let assets = DEFAULT_ASSETS.map((a) => ({ ...a }));
+// Storage key. Data is saved locally on the device (localStorage) and never sent to a server.
+const STORAGE_KEY = "worthone_assets_en";
+
+function loadAssets() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  } catch (e) { /* localStorage unavailable – fall back to defaults */ }
+  return DEFAULT_ASSETS.map((a) => ({ ...a }));
+}
+
+function saveAssets() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(assets)); } catch (e) {}
+}
+
+let assets = loadAssets();
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -59,6 +77,7 @@ function renderRows() {
 /* ---------- Add a new row ---------- */
 function addAsset() {
   assets.push({ name: "", amount: "" });
+  saveAssets();
   renderRows();
   const rows = document.querySelectorAll(".asset-row .name");
   if (rows.length) rows[rows.length - 1].focus();
@@ -97,6 +116,7 @@ function drawDonut(items, total) {
 
 /* ---------- Core calculation + view update ---------- */
 function update() {
+  saveAssets(); // auto-save on every change
   const items = assets
     .map((a, i) => ({
       name: a.name.trim() || "Unnamed",
@@ -133,10 +153,21 @@ function update() {
     }).join("");
 }
 
+/* ---------- Reset: clear saved data and restore defaults ---------- */
+function resetAssets() {
+  if (!confirm("Reset all data and restore the starting list?")) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  assets = DEFAULT_ASSETS.map((a) => ({ ...a }));
+  renderRows();
+  update();
+}
+
 /* ---------- Init ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderRows();
   update();
   const addBtn = $("#add-asset");
   if (addBtn) addBtn.addEventListener("click", addAsset);
+  const resetBtn = $("#reset-assets");
+  if (resetBtn) resetBtn.addEventListener("click", resetAssets);
 });

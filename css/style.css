@@ -264,6 +264,13 @@ section { padding: 70px 0; }
 .asset-del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 1.1rem; border-radius: 8px; }
 .asset-del:hover { color: #ef4444; background: #fef2f2; }
 .add-asset { margin-top: 8px; }
+.btn-reset {
+  background: none; border: 0; color: var(--muted); font-family: inherit;
+  font-size: .9rem; cursor: pointer; text-decoration: underline;
+  padding: 8px 6px; margin-inline-start: 6px;
+}
+.btn-reset:hover { color: #ef4444; }
+.save-note { color: var(--muted); font-size: .85rem; margin-top: 14px; }
 
 .result-panel {
   background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
