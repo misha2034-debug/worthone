@@ -1,31 +1,29 @@
 /* =========================================================
-   tool.js — מנוע המחשבון וגרף העוגה של WorthOne
-   כל החישוב מתבצע בדפדפן של המשתמש. שום נתון לא נשלח לשרת.
+   tool.en.js — WorthOne calculator engine (English version)
+   All calculation runs in the user's browser. No data is sent to a server.
    ========================================================= */
 
-// פלטת צבעים לנתחי הגרף (כחול→סגול + גוונים משלימים)
 const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
                  "#a855f7", "#0ea5e9", "#6366f1", "#c026d3", "#2563eb"];
 
-// סוגי נכסים מוצעים כברירת מחדל (המשתמש יכול לשנות שם)
+// Suggested default asset types (the user can rename them)
 const DEFAULT_ASSETS = [
-  { name: "עובר ושב", amount: "" },
-  { name: "קופת גמל להשקעה", amount: "" },
-  { name: "פנסיה", amount: "" },
-  { name: "קרן כספית", amount: "" },
-  { name: "פיקדון בנקאי", amount: "" },
-  { name: "חשבון מסחר עצמאי", amount: "" },
+  { name: "Checking account", amount: "" },
+  { name: "Provident fund for investment", amount: "" },
+  { name: "Pension", amount: "" },
+  { name: "Money market fund", amount: "" },
+  { name: "Bank deposit", amount: "" },
+  { name: "Self-managed trading account", amount: "" },
 ];
 
 let assets = DEFAULT_ASSETS.map((a) => ({ ...a }));
 
 const $ = (sel) => document.querySelector(sel);
 
-// עיצוב מספר כמטבע שקלי: 12345 -> "₪12,345"
-const fmt = (n) =>
-  "₪" + Math.round(n).toLocaleString("en-US");
+// Format a number as currency: 12345 -> "₪12,345"
+const fmt = (n) => "₪" + Math.round(n).toLocaleString("en-US");
 
-/* ---------- ציור שורות הזנת הנכסים ---------- */
+/* ---------- Render asset input rows ---------- */
 function renderRows() {
   const wrap = $("#assets-list");
   wrap.innerHTML = "";
@@ -36,12 +34,11 @@ function renderRows() {
     row.innerHTML = `
       <span class="asset-dot" style="background:${color}"></span>
       <input type="text" class="name" value="${asset.name}"
-             placeholder="שם הנכס" aria-label="שם הנכס">
+             placeholder="Asset name" aria-label="Asset name">
       <input type="number" class="amount" value="${asset.amount}"
-             placeholder="0 ₪" min="0" inputmode="numeric" aria-label="סכום">
-      <button class="asset-del" title="מחיקה" aria-label="מחיקת שורה">×</button>
+             placeholder="0 ₪" min="0" inputmode="numeric" aria-label="Amount">
+      <button class="asset-del" title="Delete" aria-label="Delete row">×</button>
     `;
-    // קישור אירועים לשורה הזו
     row.querySelector(".name").addEventListener("input", (e) => {
       assets[i].name = e.target.value;
       update();
@@ -59,28 +56,26 @@ function renderRows() {
   });
 }
 
-/* ---------- הוספת שורה חדשה ---------- */
+/* ---------- Add a new row ---------- */
 function addAsset() {
   assets.push({ name: "", amount: "" });
   renderRows();
-  // מיקוד בשדה השם החדש לחוויית הזנה נוחה
   const rows = document.querySelectorAll(".asset-row .name");
   if (rows.length) rows[rows.length - 1].focus();
 }
 
-/* ---------- ציור גרף עוגה (Donut) ב-SVG ---------- */
+/* ---------- Draw the donut chart in SVG ---------- */
 function drawDonut(items, total) {
   const size = 240, r = 90, cx = size / 2, cy = size / 2, stroke = 36;
-  const C = 2 * Math.PI * r; // היקף המעגל
+  const C = 2 * Math.PI * r;
 
   if (total <= 0) {
-    return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="גרף ריק">
+    return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Empty chart">
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="${stroke}"/>
     </svg>`;
   }
 
   let offset = 0;
-  // כל נתח = קשת על טבעת. משתמשים ב-stroke-dasharray כדי לצייר אורך יחסי.
   const arcs = items.map((it) => {
     const frac = it.value / total;
     const len = frac * C;
@@ -94,19 +89,17 @@ function drawDonut(items, total) {
     return seg;
   }).join("");
 
-  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="התפלגות ההון העצמי">
+  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Net worth breakdown">
     <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#f1f5f9" stroke-width="${stroke}"/>
     ${arcs}
   </svg>`;
 }
 
-/* ---------- חישוב מרכזי + עדכון התצוגה ---------- */
+/* ---------- Core calculation + view update ---------- */
 function update() {
-  // נכסים תקפים בלבד (בעלי סכום חיובי). צבע יציב לפי מיקום הנכס ברשימה,
-  // כך שאותו נכס מקבל אותו צבע גם בשורת ההזנה, גם בגרף וגם במקרא.
   const items = assets
     .map((a, i) => ({
-      name: a.name.trim() || "ללא שם",
+      name: a.name.trim() || "Unnamed",
       value: parseFloat(a.amount) || 0,
       color: PALETTE[i % PALETTE.length],
     }))
@@ -114,7 +107,6 @@ function update() {
 
   const total = items.reduce((sum, a) => sum + a.value, 0);
 
-  // ההון העצמי הכולל
   $("#net-worth").textContent = fmt(total);
 
   const donut = $("#donut");
@@ -122,13 +114,12 @@ function update() {
 
   if (total <= 0) {
     donut.innerHTML = drawDonut([], 0);
-    legend.innerHTML = `<p class="empty-state">הזינו סכומים כדי לראות את הפילוח שלכם 👆</p>`;
+    legend.innerHTML = `<p class="empty-state">Enter amounts to see your breakdown 👆</p>`;
     return;
   }
 
   donut.innerHTML = drawDonut(items, total);
 
-  // מקרא (Legend) עם אחוזים, ממויין מהגדול לקטן
   legend.innerHTML = items
     .slice()
     .sort((a, b) => b.value - a.value)
@@ -142,7 +133,7 @@ function update() {
     }).join("");
 }
 
-/* ---------- אתחול ---------- */
+/* ---------- Init ---------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderRows();
   update();

@@ -63,21 +63,19 @@ img, svg { max-width: 100%; }
   height: 68px;
 }
 .brand {
-  display: flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center; gap: 5px;
   font-weight: 800; font-size: 1.35rem; color: var(--ink);
   direction: ltr;           /* שם המותג נקרא תמיד משמאל-לימין: "WorthOne" */
 }
 .brand:hover { text-decoration: none; }
-/* מארק אלגנטי: מעגל לבן עם טבעת גרדיאנט דקה וספרה "1" בכחול */
-.brand .logo {
-  width: 34px; height: 34px; border-radius: 50%;
+/* המארק: המילה "One" מוקפת בטבעת גרדיאנט בצורת כדור (pill) */
+.brand b {
+  display: inline-block; padding: 1px 10px; border-radius: 999px;
+  border: 2px solid transparent;
   /* שכבה פנימית לבנה (padding-box) + טבעת גרדיאנט (border-box) */
   background: linear-gradient(#fff, #fff) padding-box, var(--gradient) border-box;
-  border: 2px solid transparent;
-  display: grid; place-items: center;
-  color: var(--blue); font-weight: 800; font-size: 1.15rem; line-height: 1;
+  color: var(--purple); font-weight: 800;
 }
-.brand b { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
 .nav-links a {
@@ -86,6 +84,11 @@ img, svg { max-width: 100%; }
 }
 .nav-links a:hover { background: var(--bg-soft); text-decoration: none; }
 .nav-links a.active { color: var(--blue); }
+.nav-links a.lang-switch {
+  border: 1.5px solid var(--line); border-radius: 8px;
+  padding: 6px 10px; color: var(--muted); font-weight: 700; letter-spacing: .3px;
+}
+.nav-links a.lang-switch:hover { border-color: var(--blue); color: var(--blue); background: #fff; }
 
 /* כפתור פתיחת תפריט בנייד */
 .nav-toggle {
@@ -302,3 +305,23 @@ section { padding: 70px 0; }
   .asset-row .amount { grid-column: 2; }
   .asset-del { grid-column: 2; justify-self: start; }
 }
+
+/* =========================================================
+   התאמת המארק לפוטר הכהה: פנים כהה במקום לבן, טקסט לבן
+   ========================================================= */
+.site-footer .brand b {
+  background: linear-gradient(#0f172a, #0f172a) padding-box, var(--gradient) border-box;
+  color: #fff;
+}
+
+/* =========================================================
+   עמודי אנגלית (LTR) — הופכים את כיוון האתר משמאל-לימין
+   מופעל כשל-<html> יש dir="ltr".
+   ========================================================= */
+html[dir="ltr"] body { direction: ltr; text-align: left; }
+html[dir="ltr"] .page-hero,
+html[dir="ltr"] .prose,
+html[dir="ltr"] .faq-q,
+html[dir="ltr"] .legend { text-align: left; }
+html[dir="ltr"] .prose ul,
+html[dir="ltr"] .prose ol { padding-inline-start: 22px; }
