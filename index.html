@@ -45,57 +45,98 @@
   <main>
     <!-- ===== HERO ===== -->
     <section class="hero">
-      <div class="container">
-        <span class="eyebrow">התמונה הפיננסית המלאה שלך</span>
-        <h1>גלה <span class="grad">כמה אתה שווה</span> באמת</h1>
-        <p class="lead">
-          WorthOne מרכזת את כל הכספים שלך – עובר ושב, קופות גמל, פנסיה, השקעות ועוד –
-          למסך אחד ברור. הזן, וקבל מיד גרף שממחיש ממה בנוי ההון העצמי שלך.
-        </p>
-        <div class="hero-actions">
-          <a href="tool.html" class="btn btn-primary btn-lg">חשב את ההון העצמי שלי →</a>
-          <a href="how-it-works.html" class="btn btn-ghost btn-lg">איך זה עובד?</a>
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <span class="eyebrow">התמונה הפיננסית המלאה שלך</span>
+          <h1>גלה <span class="grad">כמה אתה שווה</span> באמת</h1>
+          <p class="lead">
+            WorthOne מרכזת את כל הכספים שלך – עובר ושב, קופות גמל, פנסיה, השקעות ועוד –
+            למסך אחד ברור. הזן, וקבל מיד גרף שממחיש ממה בנוי ההון העצמי שלך.
+          </p>
+          <div class="hero-actions">
+            <a href="tool.html" class="btn btn-primary btn-lg">חשב את ההון העצמי שלי →</a>
+            <a href="how-it-works.html" class="btn btn-ghost btn-lg">איך זה עובד?</a>
+          </div>
+          <p class="hero-note">ללא הרשמה · ללא עלות · הנתונים שלך נשארים במכשיר שלך</p>
         </div>
-        <p class="hero-note">ללא הרשמה · ללא עלות · הנתונים שלך נשארים במכשיר שלך</p>
+
+        <!-- ויזואל: גרף עוגה מעגלי שמסמל את פילוח ההון העצמי -->
+        <div class="hero-visual">
+          <div class="hero-viz">
+            <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="המחשה של הון עצמי מפולח בגרף עוגה">
+              <defs>
+                <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#4f46e5"/>
+                  <stop offset="1" stop-color="#7c3aed"/>
+                </linearGradient>
+                <filter id="heroShadow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#4f46e5" flood-opacity="0.18"/>
+                </filter>
+              </defs>
+              <!-- נקודות מרחפות עדינות -->
+              <circle cx="197" cy="58" r="9" fill="#7c3aed" opacity="0.9"/>
+              <circle cx="25" cy="152" r="6" fill="#06b6d4" opacity="0.9"/>
+              <!-- הטבעת -->
+              <g filter="url(#heroShadow)">
+                <circle cx="110" cy="110" r="74" fill="none" stroke="#eef2ff" stroke-width="30"/>
+                <g transform="rotate(-90 110 110)" fill="none" stroke-width="30">
+                  <circle cx="110" cy="110" r="74" stroke="#4f46e5" stroke-dasharray="176.7 288.3" stroke-dashoffset="0"/>
+                  <circle cx="110" cy="110" r="74" stroke="#7c3aed" stroke-dasharray="111.6 353.4" stroke-dashoffset="-176.7"/>
+                  <circle cx="110" cy="110" r="74" stroke="#06b6d4" stroke-dasharray="93 372" stroke-dashoffset="-288.3"/>
+                  <circle cx="110" cy="110" r="74" stroke="#8b5cf6" stroke-dasharray="83.7 381.3" stroke-dashoffset="-381.3"/>
+                </g>
+                <circle cx="110" cy="110" r="47" fill="#ffffff"/>
+                <text x="110" y="110" text-anchor="middle" dominant-baseline="central" font-family="Heebo, sans-serif" font-weight="800" font-size="46" fill="url(#heroGrad)">₪</text>
+              </g>
+            </svg>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ===== יתרונות ===== -->
     <section>
       <div class="container">
+        <!-- הגדרת גרדיאנט משותפת לכל אייקוני היתרונות -->
+        <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+          <defs><linearGradient id="icoGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+          </linearGradient></defs>
+        </svg>
+
         <div class="section-head">
-          <span class="eyebrow">למה WorthOne</span>
+          <span class="eyebrow eyebrow-lg">WorthOne?</span>
           <h2>כל הכסף שלך, בתמונה אחת</h2>
           <p>במקום לרדוף אחרי מספרים בעשר אפליקציות שונות – הכל מתכנס למקום אחד.</p>
         </div>
         <div class="grid grid-3">
           <div class="card">
-            <div class="ico">📊</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
             <h3>תצוגה ויזואלית</h3>
             <p>גרף עוגה אינטראקטיבי שמראה מיד ממה מורכב ההון העצמי שלך ובאיזה משקל.</p>
           </div>
           <div class="card">
-            <div class="ico">🧩</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
             <h3>כל סוגי הנכסים</h3>
             <p>עו״ש, גמל, פנסיה, קרן השתלמות, מסחר עצמאי, נדל״ן – הכל במקום אחד.</p>
           </div>
           <div class="card">
-            <div class="ico">🔒</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
             <h3>פרטי לחלוטין</h3>
             <p>החישוב מתבצע בדפדפן שלך. שום נתון פיננסי לא נשלח או נשמר בשרת חיצוני.</p>
           </div>
           <div class="card">
-            <div class="ico">⚡</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <h3>מהיר ופשוט</h3>
             <p>בלי הרשמה ובלי סיסמאות. נכנסים, מזינים, ומקבלים תשובה תוך דקה.</p>
           </div>
           <div class="card">
-            <div class="ico">🧭</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
             <h3>פרספקטיבה</h3>
             <p>הבנה ברורה של המצב הפיננסי שלך – בסיס לקבלת החלטות טובות יותר.</p>
           </div>
           <div class="card">
-            <div class="ico">💙</div>
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
             <h3>בעברית, בשבילך</h3>
             <p>ממשק נקי ומזמין, בנוי מהיסוד לקהל הישראלי ולשפה העברית.</p>
           </div>
@@ -107,7 +148,6 @@
     <section class="section-soft">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow">פשוט כמו 1-2-3</span>
           <h2>שלושה צעדים פשוטים ואתם יודעים כמה אתם שווים</h2>
         </div>
         <div class="grid grid-3 steps">
@@ -149,9 +189,9 @@
           <li><a href="terms.html">תנאי שימוש</a></li>
           <li><a href="privacy.html">מדיניות פרטיות</a></li>
         </ul></div>
-        <div class="footer-col"><h4>מוכנים?</h4><ul>
-          <li><a href="tool.html">התחילו עכשיו →</a></li>
-        </ul></div>
+        <div class="footer-col"><h4>מוכנים?</h4>
+          <a href="tool.html" class="btn btn-primary footer-cta">התחילו עכשיו →</a>
+        </div>
       </div>
       <div class="footer-bottom">
         <span>© 2026 WorthOne. כל הזכויות שמורות.</span>
