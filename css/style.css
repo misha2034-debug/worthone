@@ -65,13 +65,17 @@ img, svg { max-width: 100%; }
 .brand {
   display: flex; align-items: center; gap: 10px;
   font-weight: 800; font-size: 1.35rem; color: var(--ink);
+  direction: ltr;           /* שם המותג נקרא תמיד משמאל-לימין: "WorthOne" */
 }
 .brand:hover { text-decoration: none; }
+/* מארק אלגנטי: מעגל לבן עם טבעת גרדיאנט דקה וספרה "1" בכחול */
 .brand .logo {
-  width: 34px; height: 34px; border-radius: 9px;
-  background: var(--gradient);
+  width: 34px; height: 34px; border-radius: 50%;
+  /* שכבה פנימית לבנה (padding-box) + טבעת גרדיאנט (border-box) */
+  background: linear-gradient(#fff, #fff) padding-box, var(--gradient) border-box;
+  border: 2px solid transparent;
   display: grid; place-items: center;
-  color: #fff; font-weight: 800; font-size: 1.05rem;
+  color: var(--blue); font-weight: 800; font-size: 1.15rem; line-height: 1;
 }
 .brand b { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
