@@ -89,6 +89,9 @@ img, svg { max-width: 100%; }
   padding: 6px 10px; color: var(--muted); font-weight: 700; letter-spacing: .3px;
 }
 .nav-links a.lang-switch:hover { border-color: var(--blue); color: var(--blue); background: #fff; }
+/* כפתור ה-CTA בתפריט: טקסט לבן ורקע גרדיאנט תמיד (מנצח את כללי הקישור הכלליים) */
+.nav-links a.btn-primary { color: #fff; }
+.nav-links a.btn-primary:hover { color: #fff; background: var(--gradient); }
 
 /* כפתור פתיחת תפריט בנייד */
 .nav-toggle {
