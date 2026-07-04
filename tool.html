@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>המחשבון | WorthOne — חשב את ההון העצמי שלך</title>
+  <meta name="description" content="הזן את הנכסים שלך וקבל מיד את ההון העצמי הכולל, מוצג בגרף עוגה אינטראקטיבי. חינמי ופרטי לחלוטין.">
+  <link rel="canonical" href="https://worthone.example/tool.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand"><span class="logo">W</span> Worth<b>One</b></a>
+      <button class="nav-toggle" aria-label="תפריט">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">בית</a></li>
+        <li><a href="how-it-works.html">איך זה עובד</a></li>
+        <li><a href="about.html">אודות</a></li>
+        <li><a href="faq.html">שאלות נפוצות</a></li>
+        <li><a href="contact.html">צור קשר</a></li>
+        <li><a href="tool.html" class="btn btn-primary">התחל עכשיו</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <div class="container">
+        <h1>המחשבון שלך</h1>
+        <p>הזן את הסכומים בכל נכס — ההון העצמי והגרף מתעדכנים אוטומטית. 🔒 הנתונים נשארים במכשיר שלך בלבד.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:40px;">
+      <div class="container">
+        <div class="tool-wrap">
+
+          <!-- צד ההזנה -->
+          <div class="assets-panel">
+            <h3 style="margin-bottom:16px;">הנכסים שלי</h3>
+            <div id="assets-list"><!-- שורות נוצרות ע"י tool.js --></div>
+            <button id="add-asset" class="btn btn-ghost add-asset">＋ הוסף נכס</button>
+          </div>
+
+          <!-- צד התוצאה -->
+          <div class="result-panel">
+            <div class="net-worth-label">ההון העצמי שלך</div>
+            <div class="net-worth-value" id="net-worth">₪0</div>
+            <div class="donut-wrap" id="donut"><!-- גרף SVG נוצר ע"י tool.js --></div>
+            <div class="legend" id="legend"><!-- מקרא נוצר ע"י tool.js --></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand"><span class="logo">W</span> Worth<b>One</b></a>
+          <p class="tag">הפלטפורמה שמרכזת את כל הכספים שלך למקום אחד, כדי שתדע בדיוק כמה אתה שווה.</p>
+        </div>
+        <div class="footer-col"><h4>מוצר</h4><ul>
+          <li><a href="tool.html">המחשבון</a></li>
+          <li><a href="how-it-works.html">איך זה עובד</a></li>
+          <li><a href="faq.html">שאלות נפוצות</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>חברה</h4><ul>
+          <li><a href="about.html">אודות</a></li>
+          <li><a href="contact.html">צור קשר</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>משפטי</h4><ul>
+          <li><a href="terms.html">תנאי שימוש</a></li>
+          <li><a href="privacy.html">מדיניות פרטיות</a></li>
+        </ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 WorthOne. כל הזכויות שמורות.</span>
+        <span>נבנה באהבה בישראל 🇮🇱</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/tool.js"></script>
+</body>
+</html>

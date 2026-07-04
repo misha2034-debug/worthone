@@ -1,0 +1,12 @@
+# קבצי מערכת
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# עורכי קוד
+.vscode/
+.idea/
+
+# לוגים וזמניים
+*.log
+node_modules/
