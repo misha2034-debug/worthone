@@ -333,6 +333,29 @@ section { padding: 70px 0; }
 }
 
 /* =========================================================
+   בלוג — כרטיסי מאמרים, תגיות ומטא
+   ========================================================= */
+.post-tag {
+  display: inline-block; background: rgba(124, 58, 237, 0.09);
+  color: var(--purple); font-weight: 700; font-size: .78rem;
+  padding: 3px 11px; border-radius: 999px;
+}
+.post-meta { color: var(--muted); font-size: .88rem; margin: 12px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.blog-card { display: flex; flex-direction: column; }
+.blog-card h3 { margin: 12px 0 8px; }
+.blog-card h3 a { color: var(--ink); }
+.blog-card h3 a:hover { color: var(--blue); text-decoration: none; }
+.blog-card .read-more { margin-top: auto; padding-top: 12px; font-weight: 700; color: var(--blue); }
+.article-body .post-tag { margin-bottom: 14px; }
+.article-body h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.25; margin-bottom: 6px; }
+.article-cta {
+  margin-top: 40px; padding: 26px; border-radius: var(--radius);
+  background: var(--bg-soft); border: 1px solid var(--line); text-align: center;
+}
+.article-cta h3 { margin-bottom: 8px; }
+.article-cta p { color: var(--muted); margin-bottom: 16px; }
+
+/* =========================================================
    התאמת המארק לפוטר הכהה: פנים כהה במקום לבן, טקסט לבן
    ========================================================= */
 .site-footer .brand b {
