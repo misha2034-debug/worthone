@@ -349,6 +349,7 @@ section { padding: 70px 0; }
 }
 .post-meta { color: var(--muted); font-size: .88rem; margin: 12px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .blog-card { display: flex; flex-direction: column; }
+.blog-thumb { width: 100%; border-radius: 12px; margin-bottom: 16px; display: block; aspect-ratio: 20 / 7; object-fit: cover; }
 .blog-card h3 { margin: 12px 0 8px; }
 .blog-card h3 a { color: var(--ink); }
 .blog-card h3 a:hover { color: var(--blue); text-decoration: none; }
@@ -361,6 +362,8 @@ section { padding: 70px 0; }
 }
 .article-cta h3 { margin-bottom: 8px; }
 .article-cta p { color: var(--muted); margin-bottom: 16px; }
+.article-figure { max-width: 780px; margin: 30px auto 0; padding: 0 20px; }
+.article-figure img { width: 100%; border-radius: var(--radius); display: block; box-shadow: var(--shadow); }
 
 /* =========================================================
    התאמת המארק לפוטר הכהה: פנים כהה במקום לבן, טקסט לבן

@@ -1,0 +1,18 @@
+<svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="קרן חירום">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="420" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <circle cx="1040" cy="80" r="150" opacity="0.08"/>
+    <circle cx="170" cy="360" r="120" opacity="0.08"/>
+    <circle cx="930" cy="360" r="70" opacity="0.10"/>
+    <circle cx="260" cy="90" r="34" opacity="0.12"/>
+  </g>
+  <g transform="translate(480 90) scale(10)" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    <path d="M9 12l2 2 4-4"/>
+  </g>
+</svg>
