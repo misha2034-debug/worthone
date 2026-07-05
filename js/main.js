@@ -20,4 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
       answer.style.maxHeight = isOpen ? answer.scrollHeight + "px" : "0";
     });
   });
+
+  // --- הופעה עדינה בגלילה: כל אלמנט עם .reveal מקבל .visible כשנכנס למסך ---
+  const revealEls = document.querySelectorAll(".reveal");
+  if (revealEls.length && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+          io.unobserve(e.target); // מופיע פעם אחת, לא בכל גלילה
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach((el) => io.observe(el));
+  } else {
+    // דפדפן ישן — פשוט מציגים הכל
+    revealEls.forEach((el) => el.classList.add("visible"));
+  }
 });

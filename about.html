@@ -36,27 +36,85 @@
       <div class="container"><h1>אודות WorthOne</h1><p>הכסף שלך מפוזר בעשרה מקומות שונים – הגיע הזמן לראות את כולו בתמונה אחת.</p></div>
     </div>
 
-    <article class="prose">
-      <p>רובנו מפזרים את הכסף שלנו בהרבה מקומות – חשבון עו״ש בבנק אחד, קופת גמל בחברה אחרת, פנסיה במקום שלישי, אולי קצת השקעות עצמאיות וקרן השתלמות. התוצאה? כמעט אף אחד לא יודע לענות בביטחון על שאלה פשוטה אחת: <strong>כמה אני שווה?</strong></p>
+    <!-- הגדרת גרדיאנט משותפת לאייקוני העמוד -->
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      <defs><linearGradient id="icoGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+      </linearGradient></defs>
+    </svg>
 
-      <h2>החזון שלנו</h2>
-      <p>WorthOne נולד מתוך אמונה שכל אדם צריך להיות מסוגל להבין את המצב הפיננסי שלו בלי תארים בכלכלה ובלי גיליונות אקסל מסובכים. אנחנו הופכים את התמונה המפוזרת לתצוגה אחת, ויזואלית וברורה, שמאפשרת לך לראות את עצמך – ולקבל החלטות טובות יותר.</p>
-
-      <h2>הערכים שמנחים אותנו</h2>
-      <h3>פשטות</h3>
-      <p>כלי פיננסי לא צריך להיות מפחיד. עיצבנו ממשק נקי, מזמין ואינטואיטיבי, שכל אחד מרגיש בו בבית מהרגע הראשון.</p>
-      <h3>פרטיות</h3>
-      <p>המידע הפיננסי שלך הוא שלך בלבד. WorthOne מבצע את כל החישובים בתוך הדפדפן שלך – הנתונים לא נשלחים לשום שרת ולא נשמרים אצלנו.</p>
-      <h3>שקיפות</h3>
-      <p>אנחנו כלי להצגת מידע ופרספקטיבה – לא יועצים. אנחנו מאמינים שכשאתה רואה את התמונה המלאה, אתה מקבל את ההחלטות הנכונות לך.</p>
-
-      <h2>חשוב לדעת</h2>
-      <p>WorthOne הוא כלי מידע והמחשה בלבד, ואינו מהווה ייעוץ פיננסי, ייעוץ השקעות או תחליף לייעוץ מקצועי המותאם אישית. לפני קבלת החלטות פיננסיות מהותיות מומלץ להיוועץ עם בעל רישיון מתאים.</p>
-
-      <div style="text-align:center; margin-top:34px;">
-        <a href="tool.html" class="btn btn-primary btn-lg">התחל להשתמש →</a>
+    <!-- ===== בלוק פתיחה: הבעיה שאנחנו פותרים ===== -->
+    <div class="container">
+      <div class="about-intro reveal">
+        רובנו מפזרים את הכסף שלנו בהרבה מקומות – חשבון עו״ש בבנק אחד, קופת גמל בחברה אחרת,
+        פנסיה במקום שלישי, אולי קצת השקעות עצמאיות וקרן השתלמות. התוצאה? כמעט אף אחד לא יודע
+        לענות בביטחון על שאלה פשוטה אחת: <strong>כמה אני שווה?</strong>
       </div>
-    </article>
+    </div>
+
+    <!-- ===== החזון ===== -->
+    <section>
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">החזון שלנו</span>
+          <h2>תמונה אחת ברורה, החלטות טובות יותר</h2>
+          <p>WorthOne נולד מתוך אמונה שכל אדם צריך להיות מסוגל להבין את המצב הפיננסי שלו
+             בלי תארים בכלכלה ובלי גיליונות אקסל מסובכים. אנחנו הופכים את התמונה המפוזרת
+             לתצוגה אחת, ויזואלית וברורה, שמאפשרת לך לראות את עצמך – ולקבל החלטות טובות יותר.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== הערכים – כרטיסים מעוצבים ===== -->
+    <section class="section-soft" style="padding-top:56px;">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">מה מנחה אותנו</span>
+          <h2>שלושה ערכים, הבטחה אחת</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+            <h3>פשטות</h3>
+            <p>כלי פיננסי לא צריך להיות מפחיד. עיצבנו ממשק נקי, מזמין ואינטואיטיבי, שכל אחד מרגיש בו בבית מהרגע הראשון.</p>
+          </div>
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h3>פרטיות</h3>
+            <p>המידע הפיננסי שלך הוא שלך בלבד. WorthOne מבצע את כל החישובים בתוך הדפדפן שלך – הנתונים לא נשלחים לשום שרת ולא נשמרים אצלנו.</p>
+          </div>
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>שקיפות</h3>
+            <p>אנחנו כלי להצגת מידע ופרספקטיבה – לא יועצים. אנחנו מאמינים שכשאתה רואה את התמונה המלאה, אתה מקבל את ההחלטות הנכונות לך.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== חשוב לדעת ===== -->
+    <section style="padding-bottom:40px;">
+      <div class="container">
+        <div class="notice-box reveal">
+          <div class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div>
+            <h3>חשוב לדעת</h3>
+            <p>WorthOne הוא כלי מידע והמחשה בלבד, ואינו מהווה ייעוץ פיננסי, ייעוץ השקעות או תחליף לייעוץ מקצועי המותאם אישית. לפני קבלת החלטות פיננסיות מהותיות מומלץ להיוועץ עם בעל רישיון מתאים.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section style="padding-top:20px;">
+      <div class="container">
+        <div class="cta-band reveal">
+          <h2>מוכן לראות את התמונה המלאה?</h2>
+          <p>לוקח פחות מדקה. בלי הרשמה, בלי עלות.</p>
+          <a href="tool.html" class="btn btn-primary btn-lg">התחל להשתמש →</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">

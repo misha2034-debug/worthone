@@ -36,27 +36,87 @@
       <div class="container"><h1>About WorthOne</h1><p>Your money is scattered across ten different places – it's time to see all of it in one picture.</p></div>
     </div>
 
-    <article class="prose">
-      <p>Most of us spread our money across many places – a checking account at one bank, a provident fund at another company, a pension somewhere else, maybe some self-managed investments and a study fund. The result? Almost no one can confidently answer one simple question: <strong>how much am I worth?</strong></p>
+    <!-- Shared gradient definition for the page icons -->
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      <defs><linearGradient id="icoGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+      </linearGradient></defs>
+    </svg>
 
-      <h2>Our vision</h2>
-      <p>WorthOne was born from the belief that everyone should be able to understand their financial situation without an economics degree and without complicated spreadsheets. We turn the scattered picture into one clear, visual view that lets you see yourself – and make better decisions.</p>
-
-      <h2>The values that guide us</h2>
-      <h3>Simplicity</h3>
-      <p>A financial tool shouldn't be intimidating. We designed a clean, welcoming and intuitive interface where everyone feels at home from the very first moment.</p>
-      <h3>Privacy</h3>
-      <p>Your financial information is yours alone. WorthOne performs all calculations inside your browser – the data is never sent to any server and is not stored by us.</p>
-      <h3>Transparency</h3>
-      <p>We are a tool for presenting information and perspective – not advisors. We believe that when you see the full picture, you make the decisions that are right for you.</p>
-
-      <h2>Important to know</h2>
-      <p>WorthOne is an information and illustration tool only, and does not constitute financial advice, investment advice or a substitute for personalized professional advice. Before making significant financial decisions, we recommend consulting a licensed professional.</p>
-
-      <div style="text-align:center; margin-top:34px;">
-        <a href="tool.html" class="btn btn-primary btn-lg">Start using it →</a>
+    <!-- ===== Intro block: the problem we solve ===== -->
+    <div class="container">
+      <div class="about-intro reveal">
+        Most of us spread our money across many places – a checking account at one bank, a provident
+        fund at another company, a pension somewhere else, maybe some self-managed investments and a
+        study fund. The result? Almost no one can confidently answer one simple question:
+        <strong>how much am I worth?</strong>
       </div>
-    </article>
+    </div>
+
+    <!-- ===== Vision ===== -->
+    <section>
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Our vision</span>
+          <h2>One clear picture, better decisions</h2>
+          <p>WorthOne was born from the belief that everyone should be able to understand their
+             financial situation without an economics degree and without complicated spreadsheets.
+             We turn the scattered picture into one clear, visual view that lets you see yourself –
+             and make better decisions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Values – styled cards ===== -->
+    <section class="section-soft" style="padding-top:56px;">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">What guides us</span>
+          <h2>Three values, one promise</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+            <h3>Simplicity</h3>
+            <p>A financial tool shouldn't be intimidating. We designed a clean, welcoming and intuitive interface where everyone feels at home from the very first moment.</p>
+          </div>
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h3>Privacy</h3>
+            <p>Your financial information is yours alone. WorthOne performs all calculations inside your browser – the data is never sent to any server and is not stored by us.</p>
+          </div>
+          <div class="card reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>Transparency</h3>
+            <p>We are a tool for presenting information and perspective – not advisors. We believe that when you see the full picture, you make the decisions that are right for you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Important to know ===== -->
+    <section style="padding-bottom:40px;">
+      <div class="container">
+        <div class="notice-box reveal">
+          <div class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div>
+            <h3>Important to know</h3>
+            <p>WorthOne is an information and illustration tool only, and does not constitute financial advice, investment advice or a substitute for personalized professional advice. Before making significant financial decisions, we recommend consulting a licensed professional.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section style="padding-top:20px;">
+      <div class="container">
+        <div class="cta-band reveal">
+          <h2>Ready to see the full picture?</h2>
+          <p>It takes less than a minute. No sign-up, no cost.</p>
+          <a href="tool.html" class="btn btn-primary btn-lg">Start using it →</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
