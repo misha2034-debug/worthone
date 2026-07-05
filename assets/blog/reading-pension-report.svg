@@ -1,0 +1,20 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="איך לקרוא את הדוח הפנסיוני">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="420" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <circle cx="1040" cy="80" r="150" opacity="0.08"/>
+    <circle cx="170" cy="360" r="120" opacity="0.08"/>
+    <circle cx="930" cy="360" r="70" opacity="0.10"/>
+    <circle cx="260" cy="90" r="34" opacity="0.12"/>
+  </g>
+  <g transform="translate(480 90) scale(10)" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="8" y1="13" x2="16" y2="13"/>
+    <line x1="8" y1="17" x2="13" y2="17"/>
+  </g>
+</svg>

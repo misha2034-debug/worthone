@@ -11,7 +11,7 @@ const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
 const DEFAULT_ASSETS = [
   { name: "עובר ושב", amount: "" },
   { name: "קופת גמל להשקעה", amount: "" },
-  { name: "פנסיה", amount: "" },
+  { name: "קרן פנסיה", amount: "" },
   { name: "קרן כספית", amount: "" },
   { name: "פיקדון בנקאי", amount: "" },
   { name: "חשבון מסחר עצמאי", amount: "" },

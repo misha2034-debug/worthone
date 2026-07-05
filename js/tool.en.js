@@ -10,7 +10,7 @@ const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
 const DEFAULT_ASSETS = [
   { name: "Checking account", amount: "" },
   { name: "Provident fund for investment", amount: "" },
-  { name: "Pension", amount: "" },
+  { name: "Pension fund", amount: "" },
   { name: "Money market fund", amount: "" },
   { name: "Bank deposit", amount: "" },
   { name: "Self-managed trading account", amount: "" },
