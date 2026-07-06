@@ -141,7 +141,7 @@ img, svg { max-width: 100%; }
 
 /* אפקט הקלדה (Typewriter) בשורת ה-hero.
    ה-sizer הנסתר שומר על גובה/רוחב קבועים כדי למנוע קפיצות פריסה (layout shift). */
-.hero-note.typewriter { position: relative; }
+.hero-note.typewriter { position: relative; font-weight: 600; color: #475569; }
 .hero-note .tw-sizer { visibility: hidden; }
 .hero-note .tw-run { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 100%; }
 .hero-note .tw-cursor {
