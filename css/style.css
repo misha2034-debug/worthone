@@ -166,6 +166,22 @@ img, svg { max-width: 100%; }
 }
 .hero-viz svg { width: 100%; height: auto; }
 
+/* אנימציית הוויזואל בדף הבית — סיבוב איטי ואלגנטי של הטבעת + ריחוף עדין של הנקודות.
+   הספרה ₪ במרכז נשארת יציבה. */
+@keyframes hero-spin { to { transform: rotate(360deg); } }
+@keyframes hero-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.hero-ring {
+  transform-box: view-box; transform-origin: 110px 110px;
+  animation: hero-spin 42s linear infinite;
+}
+.hero-viz .dot-a { animation: hero-bob 6s ease-in-out infinite; }
+.hero-viz .dot-b { animation: hero-bob 7.5s ease-in-out infinite .8s; }
+.hero-viz { transition: transform .35s ease, box-shadow .35s ease; }
+.hero-viz:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -18px rgba(79,70,229,.4); }
+@media (prefers-reduced-motion: reduce) {
+  .hero-ring, .hero-viz .dot-a, .hero-viz .dot-b { animation: none; }
+}
+
 /* =========================================================
    מקטעים כלליים (Sections)
    ========================================================= */
