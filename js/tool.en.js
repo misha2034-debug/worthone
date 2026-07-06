@@ -134,7 +134,7 @@ function update() {
 
   if (total <= 0) {
     donut.innerHTML = drawDonut([], 0);
-    legend.innerHTML = `<p class="empty-state">Enter amounts to see your breakdown 👆</p>`;
+    legend.innerHTML = `<p class="empty-state">Enter your amounts and see how much you're worth here</p>`;
     return;
   }
 

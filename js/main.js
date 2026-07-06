@@ -37,4 +37,26 @@ document.addEventListener("DOMContentLoaded", () => {
     // דפדפן ישן — פשוט מציגים הכל
     revealEls.forEach((el) => el.classList.add("visible"));
   }
+
+  // --- אפקט הקלדה (Typewriter) בשורת ה-hero ---
+  const twText = document.querySelector(".hero-note .tw-text");
+  if (twText) {
+    const full = twText.getAttribute("data-text") || "";
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      // מכבדים העדפת "פחות תנועה" — מציגים את המשפט המלא ללא אנימציה
+      twText.textContent = full;
+    } else {
+      const typeSpeed = 55, delSpeed = 28, holdFull = 2000, holdEmpty = 600, startDelay = 700;
+      let i = 0, deleting = false;
+      const tick = () => {
+        i += deleting ? -1 : 1;
+        twText.textContent = full.slice(0, i);
+        if (!deleting && i >= full.length) { deleting = true; setTimeout(tick, holdFull); }
+        else if (deleting && i <= 0) { deleting = false; setTimeout(tick, holdEmpty); }
+        else { setTimeout(tick, deleting ? delSpeed : typeSpeed); }
+      };
+      setTimeout(tick, startDelay);
+    }
+  }
 });

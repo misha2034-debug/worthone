@@ -135,6 +135,25 @@ img, svg { max-width: 100%; }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
 .hero-note { margin-top: 18px; color: var(--muted); font-size: .92rem; }
 
+/* eyebrow מוגדל מעט לכותרת המשנה של ה-hero (שומר על רספונסיביות).
+   סלקטור עם שני מחלקות כדי לגבור על כלל .eyebrow הכללי המוגדר בהמשך הקובץ. */
+.eyebrow.eyebrow-hero { font-size: clamp(1.02rem, 2.4vw, 1.2rem); }
+
+/* אפקט הקלדה (Typewriter) בשורת ה-hero.
+   ה-sizer הנסתר שומר על גובה/רוחב קבועים כדי למנוע קפיצות פריסה (layout shift). */
+.hero-note.typewriter { position: relative; }
+.hero-note .tw-sizer { visibility: hidden; }
+.hero-note .tw-run { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 100%; }
+.hero-note .tw-cursor {
+  display: inline-block; margin-inline-start: 2px;
+  color: var(--purple); font-weight: 700;
+  animation: tw-blink 1.05s steps(1, end) infinite;
+}
+@keyframes tw-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-note .tw-cursor { animation: none; }
+}
+
 /* פריסת HERO דו-טורית: טקסט + ויזואל */
 .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
 .hero-visual { display: flex; justify-content: center; }

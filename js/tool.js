@@ -144,7 +144,7 @@ function update() {
 
   if (total <= 0) {
     donut.innerHTML = drawDonut([], 0);
-    legend.innerHTML = `<p class="empty-state">הזינו סכומים כדי לראות את הפילוח שלכם 👆</p>`;
+    legend.innerHTML = `<p class="empty-state">הזינו את הסכומים וכאן תראו כמה אתם שווים</p>`;
     return;
   }
 
