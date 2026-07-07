@@ -421,6 +421,37 @@ section { padding: 70px 0; }
 }
 
 /* =========================================================
+   עמוד "איך זה עובד" — תרשים זרימה אנכי עם חיצים מחברים
+   ========================================================= */
+.flow { max-width: 720px; margin: 0 auto; }
+.flow-step {
+  display: flex; gap: 22px; align-items: flex-start;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 26px 28px; box-shadow: 0 8px 26px -18px rgba(79, 70, 229, 0.35);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.flow-step:hover { transform: translateY(-3px); box-shadow: 0 16px 34px -18px rgba(79, 70, 229, 0.5); }
+.flow-num {
+  flex: 0 0 auto; width: 58px; height: 58px; border-radius: 50%;
+  background: var(--gradient); color: #fff; font-weight: 800; font-size: 1.55rem;
+  display: grid; place-items: center;
+  box-shadow: 0 10px 20px -8px rgba(124, 58, 237, 0.55);
+}
+.flow-body h3 { font-size: 1.2rem; margin-bottom: 8px; }
+.flow-body p { color: var(--muted); }
+/* מחבר בין שלבים: קו גרדיאנט אנכי + חץ בעיגול */
+.flow-arrow { position: relative; height: 52px; display: grid; place-items: center; }
+.flow-arrow::before {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(var(--blue), var(--purple)); opacity: .4;
+}
+.flow-arrow .chev {
+  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  background: #fff; border: 1.5px solid var(--line); display: grid; place-items: center;
+}
+.flow-arrow .chev svg { width: 22px; height: 22px; display: block; }
+
+/* =========================================================
    בלוג — כרטיסי מאמרים, תגיות ומטא
    ========================================================= */
 .post-tag {

@@ -40,25 +40,49 @@
     </div>
 
     <section>
-      <div class="container" style="max-width:800px;">
-        <div class="grid" style="gap:20px;">
-          <div class="card"><div class="step"><span class="num">1</span><div>
-            <h3>Bring all your assets together</h3>
-            <p>Open the calculator and enter every source of money you have: checking, provident fund for investment, pension, study fund, money market fund, bank deposit, self-managed trading account, and even real estate or cash. Add as many rows as you like and give each one its own name.</p>
-          </div></div></div>
+      <div class="container">
+        <!-- Shared gradient for the flow arrows -->
+        <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+          <defs><linearGradient id="icoGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4f46e5"/><stop offset="1" stop-color="#7c3aed"/>
+          </linearGradient></defs>
+        </svg>
 
-          <div class="card"><div class="step"><span class="num">2</span><div>
-            <h3>Watch the picture take shape</h3>
-            <p>The moment you enter an amount, your total net worth and the donut chart update instantly. Each asset gets a color and a proportional slice, so you can clearly see what most of your wealth rests on – and what takes up too little space.</p>
-          </div></div></div>
+        <div class="flow">
+          <div class="flow-step reveal">
+            <div class="flow-num">1</div>
+            <div class="flow-body">
+              <h3>Bring all your assets together</h3>
+              <p>Open the calculator and enter every source of money you have: checking, provident fund for investment, pension, study fund, money market fund, bank deposit, self-managed trading account, and even real estate or cash. Add as many rows as you like and give each one its own name.</p>
+            </div>
+          </div>
 
-          <div class="card"><div class="step"><span class="num">3</span><div>
-            <h3>Gain perspective</h3>
-            <p>The visual picture turns scattered numbers into one clear understanding. Now you can ask the right questions: Am I too liquid? Is my retirement saving enough? Where should I diversify? This is the starting point for every good financial decision.</p>
-          </div></div></div>
+          <div class="flow-arrow reveal" aria-hidden="true">
+            <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+          </div>
+
+          <div class="flow-step reveal">
+            <div class="flow-num">2</div>
+            <div class="flow-body">
+              <h3>Watch the picture take shape</h3>
+              <p>The moment you enter an amount, your total net worth and the donut chart update instantly. Each asset gets a color and a proportional slice, so you can clearly see what most of your wealth rests on – and what takes up too little space.</p>
+            </div>
+          </div>
+
+          <div class="flow-arrow reveal" aria-hidden="true">
+            <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+          </div>
+
+          <div class="flow-step reveal">
+            <div class="flow-num">3</div>
+            <div class="flow-body">
+              <h3>Gain perspective</h3>
+              <p>The visual picture turns scattered numbers into one clear understanding. Now you can ask the right questions: Am I too liquid? Is my retirement saving enough? Where should I diversify? This is the starting point for every good financial decision.</p>
+            </div>
+          </div>
         </div>
 
-        <div style="text-align:center; margin-top:40px;">
+        <div style="text-align:center; margin-top:44px;">
           <a href="tool.html" class="btn btn-primary btn-lg">Try it yourself →</a>
         </div>
       </div>
