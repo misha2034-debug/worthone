@@ -43,7 +43,7 @@ const $ = (sel) => document.querySelector(sel);
 
 // עיצוב מספר כמטבע שקלי: 12345 -> "₪12,345"
 const fmt = (n) =>
-  "₪" + Math.round(n).toLocaleString("en-US");
+  (n < 0 ? "-" : "") + "₪" + Math.abs(Math.round(n)).toLocaleString("en-US");
 
 /* ---------- ציור שורות הזנת הנכסים ---------- */
 function renderRows() {
@@ -58,7 +58,7 @@ function renderRows() {
       <input type="text" class="name" value="${asset.name}"
              placeholder="שם הנכס" aria-label="שם הנכס">
       <input type="number" class="amount" value="${asset.amount}"
-             placeholder="0 ₪" min="0" inputmode="numeric" aria-label="סכום">
+             placeholder="0 ₪" ${i === 0 ? "" : 'min="0" inputmode="numeric"'} aria-label="סכום">
       <button class="asset-del" title="מחיקה" aria-label="מחיקת שורה">×</button>
     `;
     // קישור אירועים לשורה הזו
@@ -67,6 +67,8 @@ function renderRows() {
       update();
     });
     row.querySelector(".amount").addEventListener("input", (e) => {
+      // מינוס מותר רק בשורה הראשונה (עובר ושב); בשאר הנכסים חוסמים ערך שלילי
+      if (i !== 0 && parseFloat(e.target.value) < 0) e.target.value = "0";
       assets[i].amount = e.target.value;
       update();
     });
@@ -126,15 +128,16 @@ function update() {
   saveAssets(); // שמירה אוטומטית בכל שינוי
   // נכסים תקפים בלבד (בעלי סכום חיובי). צבע יציב לפי מיקום הנכס ברשימה,
   // כך שאותו נכס מקבל אותו צבע גם בשורת ההזנה, גם בגרף וגם במקרא.
-  const items = assets
-    .map((a, i) => ({
-      name: a.name.trim() || "ללא שם",
-      value: parseFloat(a.amount) || 0,
-      color: PALETTE[i % PALETTE.length],
-    }))
-    .filter((a) => a.value > 0);
-
-  const total = items.reduce((sum, a) => sum + a.value, 0);
+  // כל הנכסים; ההון העצמי הכולל כולל גם ערכים שליליים (עו״ש במינוס)
+  const parsed = assets.map((a, i) => ({
+    name: a.name.trim() || "ללא שם",
+    value: parseFloat(a.amount) || 0,
+    color: PALETTE[i % PALETTE.length],
+  }));
+  const total = parsed.reduce((sum, a) => sum + a.value, 0);
+  // בגרף ובמקרא מציגים רק נכסים חיוביים (אי אפשר לצייר נתח שלילי)
+  const items = parsed.filter((a) => a.value > 0);
+  const positiveTotal = items.reduce((sum, a) => sum + a.value, 0);
 
   // ההון העצמי הכולל
   $("#net-worth").textContent = fmt(total);
@@ -142,20 +145,20 @@ function update() {
   const donut = $("#donut");
   const legend = $("#legend");
 
-  if (total <= 0) {
+  if (items.length === 0) {
     donut.innerHTML = drawDonut([], 0);
     legend.innerHTML = `<p class="empty-state">הזינו את הסכומים וכאן תראו כמה אתם שווים</p>`;
     return;
   }
 
-  donut.innerHTML = drawDonut(items, total);
+  donut.innerHTML = drawDonut(items, positiveTotal);
 
   // מקרא (Legend) עם אחוזים, ממויין מהגדול לקטן
   legend.innerHTML = items
     .slice()
     .sort((a, b) => b.value - a.value)
     .map((it) => {
-      const pct = ((it.value / total) * 100).toFixed(1);
+      const pct = ((it.value / positiveTotal) * 100).toFixed(1);
       return `<div class="legend-item">
         <span class="dot" style="background:${it.color}"></span>
         <span class="lg-name">${it.name}</span>

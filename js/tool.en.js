@@ -39,7 +39,7 @@ let assets = loadAssets();
 const $ = (sel) => document.querySelector(sel);
 
 // Format a number as currency: 12345 -> "₪12,345"
-const fmt = (n) => "₪" + Math.round(n).toLocaleString("en-US");
+const fmt = (n) => (n < 0 ? "-" : "") + "₪" + Math.abs(Math.round(n)).toLocaleString("en-US");
 
 /* ---------- Render asset input rows ---------- */
 function renderRows() {
@@ -54,7 +54,7 @@ function renderRows() {
       <input type="text" class="name" value="${asset.name}"
              placeholder="Asset name" aria-label="Asset name">
       <input type="number" class="amount" value="${asset.amount}"
-             placeholder="0 ₪" min="0" inputmode="numeric" aria-label="Amount">
+             placeholder="0 ₪" ${i === 0 ? "" : 'min="0" inputmode="numeric"'} aria-label="Amount">
       <button class="asset-del" title="Delete" aria-label="Delete row">×</button>
     `;
     row.querySelector(".name").addEventListener("input", (e) => {
@@ -62,6 +62,8 @@ function renderRows() {
       update();
     });
     row.querySelector(".amount").addEventListener("input", (e) => {
+      // Negatives allowed only in the first row (checking account); block them elsewhere
+      if (i !== 0 && parseFloat(e.target.value) < 0) e.target.value = "0";
       assets[i].amount = e.target.value;
       update();
     });
@@ -117,34 +119,35 @@ function drawDonut(items, total) {
 /* ---------- Core calculation + view update ---------- */
 function update() {
   saveAssets(); // auto-save on every change
-  const items = assets
-    .map((a, i) => ({
-      name: a.name.trim() || "Unnamed",
-      value: parseFloat(a.amount) || 0,
-      color: PALETTE[i % PALETTE.length],
-    }))
-    .filter((a) => a.value > 0);
-
-  const total = items.reduce((sum, a) => sum + a.value, 0);
+  // All assets; net worth includes negative values (checking account overdraft)
+  const parsed = assets.map((a, i) => ({
+    name: a.name.trim() || "Unnamed",
+    value: parseFloat(a.amount) || 0,
+    color: PALETTE[i % PALETTE.length],
+  }));
+  const total = parsed.reduce((sum, a) => sum + a.value, 0);
+  // The chart and legend show only positive assets (a negative slice can't be drawn)
+  const items = parsed.filter((a) => a.value > 0);
+  const positiveTotal = items.reduce((sum, a) => sum + a.value, 0);
 
   $("#net-worth").textContent = fmt(total);
 
   const donut = $("#donut");
   const legend = $("#legend");
 
-  if (total <= 0) {
+  if (items.length === 0) {
     donut.innerHTML = drawDonut([], 0);
     legend.innerHTML = `<p class="empty-state">Enter your amounts and see how much you're worth here</p>`;
     return;
   }
 
-  donut.innerHTML = drawDonut(items, total);
+  donut.innerHTML = drawDonut(items, positiveTotal);
 
   legend.innerHTML = items
     .slice()
     .sort((a, b) => b.value - a.value)
     .map((it) => {
-      const pct = ((it.value / total) * 100).toFixed(1);
+      const pct = ((it.value / positiveTotal) * 100).toFixed(1);
       return `<div class="legend-item">
         <span class="dot" style="background:${it.color}"></span>
         <span class="lg-name">${it.name}</span>

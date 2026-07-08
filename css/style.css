@@ -326,7 +326,7 @@ section { padding: 70px 0; }
 .legend-item .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
 .legend-item .lg-name { flex: 1; color: var(--ink); }
 .legend-item .lg-pct { color: var(--muted); direction: ltr; }
-.empty-state { color: var(--muted); padding: 40px 0; }
+.empty-state { color: #475569; padding: 44px 16px; text-align: center; font-size: 1.12rem; font-weight: 600; line-height: 1.6; }
 
 /* =========================================================
    כותרת תחתונה (Footer)
