@@ -43,7 +43,7 @@ const $ = (sel) => document.querySelector(sel);
 
 // עיצוב מספר כמטבע שקלי: 12345 -> "₪12,345"
 const fmt = (n) =>
-  (n < 0 ? "-" : "") + "₪" + Math.abs(Math.round(n)).toLocaleString("en-US");
+  (n < 0 ? "-" : "") + "₪" + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 /* ---------- ציור שורות הזנת הנכסים ---------- */
 function renderRows() {
@@ -58,7 +58,7 @@ function renderRows() {
       <input type="text" class="name" value="${asset.name}"
              placeholder="שם הנכס" aria-label="שם הנכס">
       <input type="number" class="amount" value="${asset.amount}"
-             placeholder="0 ₪" ${i === 0 ? "" : 'min="0" inputmode="numeric"'} aria-label="סכום">
+             placeholder="0 ₪" step="any" ${i === 0 ? "" : 'min="0" inputmode="decimal"'} aria-label="סכום">
       <button class="asset-del" title="מחיקה" aria-label="מחיקת שורה">×</button>
     `;
     // קישור אירועים לשורה הזו

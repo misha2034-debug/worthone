@@ -39,7 +39,7 @@ let assets = loadAssets();
 const $ = (sel) => document.querySelector(sel);
 
 // Format a number as currency: 12345 -> "₪12,345"
-const fmt = (n) => (n < 0 ? "-" : "") + "₪" + Math.abs(Math.round(n)).toLocaleString("en-US");
+const fmt = (n) => (n < 0 ? "-" : "") + "₪" + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 /* ---------- Render asset input rows ---------- */
 function renderRows() {
@@ -54,7 +54,7 @@ function renderRows() {
       <input type="text" class="name" value="${asset.name}"
              placeholder="Asset name" aria-label="Asset name">
       <input type="number" class="amount" value="${asset.amount}"
-             placeholder="0 ₪" ${i === 0 ? "" : 'min="0" inputmode="numeric"'} aria-label="Amount">
+             placeholder="0 ₪" step="any" ${i === 0 ? "" : 'min="0" inputmode="decimal"'} aria-label="Amount">
       <button class="asset-del" title="Delete" aria-label="Delete row">×</button>
     `;
     row.querySelector(".name").addEventListener("input", (e) => {
