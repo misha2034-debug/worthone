@@ -504,7 +504,7 @@ html[dir="ltr"] .prose ol { padding-inline-start: 22px; }
 /* --- שורת החזקה --- */
 .holding-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
 .holding-row:last-child { border-bottom: none; }
-.holding-main { display: grid; grid-template-columns: 14px 1fr 130px 36px; gap: 10px; align-items: center; }
+.holding-main { display: grid; grid-template-columns: 14px 1fr 116px 56px 36px; gap: 10px; align-items: center; }
 .holding-main input {
   width: 100%; padding: 11px 12px; border: 1px solid var(--line);
   border-radius: 10px; font-family: inherit; font-size: .96rem; background: #fff;
@@ -593,9 +593,37 @@ html[dir="ltr"] .prose ol { padding-inline-start: 22px; }
 }
 @media (max-width: 520px) {
   .metrics-grid { grid-template-columns: 1fr; }
-  .holding-main { grid-template-columns: 14px 1fr 36px; grid-template-areas: "d q x" ". a a"; }
+  .holding-main { grid-template-columns: 14px 1fr 56px 36px; grid-template-areas: "d q q x" ". a c c"; }
   .holding-main .asset-dot { grid-area: d; }
   .holding-main .hq { grid-area: q; }
   .holding-main .hamt { grid-area: a; }
+  .holding-main .hcur { grid-area: c; }
   .holding-main .asset-del { grid-area: x; }
 }
+
+/* --- מטבע ושער חליפין (portfolio.html) --- */
+.holding-main .hcur {
+  padding: 11px 6px; border: 1px solid var(--line); border-radius: 10px;
+  font-family: inherit; font-size: .96rem; background: #fff; color: var(--ink);
+  text-align: center; cursor: pointer;
+}
+.holding-main .hcur:focus { outline: none; border-color: var(--blue); }
+
+/* הסכום המומר לשקלים, מוצג לצד הנייר */
+.hm-conv {
+  background: #eef2ff; color: var(--blue); border-radius: 999px;
+  padding: 1px 9px; direction: ltr; font-weight: 600;
+}
+
+.fx-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 18px 0 4px; padding: 12px 14px;
+  background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+}
+.fx-row label { font-size: .9rem; font-weight: 600; color: var(--ink); }
+.fx-row input {
+  width: 88px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px;
+  font-family: inherit; font-size: .95rem; text-align: center; direction: ltr; background: #fff;
+}
+.fx-row input:focus { outline: none; border-color: var(--blue); }
+.fx-hint { font-size: .8rem; color: var(--muted); }

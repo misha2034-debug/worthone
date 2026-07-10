@@ -51,12 +51,20 @@
             <datalist id="security-list"><!-- ממולא ע"י portfolio.js --></datalist>
             <button id="add-holding" class="btn btn-ghost add-asset">＋ הוסף החזקה</button>
             <button id="reset-holdings" class="btn-reset" type="button">איפוס</button>
+
+            <div class="fx-row">
+              <label for="fx-rate" id="fx-label">שער דולר–שקל</label>
+              <input type="number" id="fx-rate" min="0.01" step="0.01" inputmode="decimal" aria-label="שער דולר שקל">
+              <span class="fx-hint">עדכנו לפי השער היציג</span>
+            </div>
+
             <p class="save-note">הנתונים נשמרים אוטומטית במכשיר שלך – הם לא יתאפסו במעבר בין דפים.</p>
           </div>
 
           <!-- צד התוצאה -->
           <div class="result-panel">
-            <div class="net-worth-label">הרכב התיק</div>
+            <div class="net-worth-label" id="p-total-label">שווי התיק</div>
+            <div class="net-worth-value" id="p-total">₪0</div>
             <div class="donut-wrap" id="p-donut"></div>
             <div class="legend" id="p-legend"></div>
           </div>
@@ -88,6 +96,11 @@
           נכון ל<span id="data-as-of">–</span>, ולא רשימת ההחזקות בפועל של הקרן — הרכב אמיתי משתנה מדי יום.
           המספרים נועדו להראות סדרי גודל ומגמות, לא דיוק לאחוז.
           כל החישוב מתבצע בדפדפן שלכם; שום נתון לא נשלח לשרת.
+          <br><br>
+          <strong>על המטבע:</strong> סכומים בדולר מומרים לשקלים לפי השער שהזנתם, כדי שכל ההחזקות
+          יישקלו על אותו בסיס. שער החליפין אינו נמשך אוטומטית — עדכנו אותו בעצמכם.
+          שימו לב ש<strong>מטבע המסחר אינו חשיפת המטבע</strong>: גם קרן הנסחרת בשקלים על מדד S&P 500
+          מחזיקה מניות אמריקאיות, ולכן חשופה לדולר בפועל.
           <br><br>
           המידע באתר הוא כללי בלבד ואינו מהווה ייעוץ השקעות או המלצה לרכישת נייר ערך כלשהו.
         </p>

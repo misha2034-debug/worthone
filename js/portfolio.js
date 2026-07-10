@@ -14,13 +14,17 @@ const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
                  "#a855f7", "#0ea5e9", "#6366f1", "#c026d3", "#2563eb"];
 
 const STORAGE_KEY = "worthone_portfolio_" + LANG;
+const FX_KEY = "worthone_fx_usd";   // משותף לשתי השפות — זה אותו שער
 
 /* ---------- מחרוזות ממשק ---------- */
 const T = {
   he: {
-    unnamed: "ללא שם", currency: "₪",
+    unnamed: "ללא שם",
     searchPh: "מספר נייר, שם קרן או סימול מניה",
-    amountPh: "0 ₪",
+    amountPh: "0",
+    currencyLabel: "מטבע",
+    fxLabel: "שער דולר–שקל",
+    totalLabel: "שווי התיק",
     unknownPrompt: "לא מזוהה — בחרו את המדד שהנייר עוקב אחריו:",
     chooseIndex: "בחרו מדד…",
     singleStock: "מניה בודדת",
@@ -40,9 +44,12 @@ const T = {
     verified: "מספר נייר מאומת",
   },
   en: {
-    unnamed: "Unnamed", currency: "₪",
+    unnamed: "Unnamed",
     searchPh: "Security number, fund name or stock ticker",
-    amountPh: "0 ₪",
+    amountPh: "0",
+    currencyLabel: "Currency",
+    fxLabel: "USD–ILS rate",
+    totalLabel: "Portfolio value",
     unknownPrompt: "Not recognised — choose the index this security tracks:",
     chooseIndex: "Choose an index…",
     singleStock: "Single stock",
@@ -64,7 +71,9 @@ const T = {
 }[LANG];
 
 const $ = (s) => document.querySelector(s);
-const fmt = (n) => "₪" + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const num = (n, d = 2) => Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: d });
+// סכום במטבע נתון. ברירת המחדל היא מטבע הבסיס (שקל).
+const fmt = (n, cur = BASE_CURRENCY) => CURRENCIES[cur].symbol + num(n);
 const pct = (n) => n.toFixed(1) + "%";
 
 /* =========================================================
@@ -109,6 +118,7 @@ function resolveQuery(q) {
   if (fund) {
     return {
       kind: "fund", label: fund.name[LANG], verified: fund.verified, fee: fund.fee,
+      currency: fund.currency || BASE_CURRENCY,
       indexId: fund.index, sub: INDEX_PROFILES[fund.index].label[LANG],
       matrix: matrixForIndex(fund.index),
     };
@@ -120,6 +130,7 @@ function resolveQuery(q) {
   if (stock) {
     return {
       kind: "stock", label: stock.name[LANG] + " (" + stock.ticker + ")", verified: false, fee: null,
+      currency: stockCurrency(stock),
       indexId: null, sub: T.singleStock + " · " + REGIONS[stock.region][LANG] + " · " + SECTORS[stock.sector][LANG],
       matrix: matrixForStock(stock),
     };
@@ -287,17 +298,34 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
 /* =========================================================
    תצוגה
    ========================================================= */
+const blankRow = () => ({ query: "", amount: "", manualIndex: "", currency: "" });
+
 let holdings = loadHoldings();
+let fxRate = loadFx();   // כמה שקלים שווה דולר אחד
 
 function loadHoldings() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (Array.isArray(saved) && saved.length) return saved;
   } catch (e) {}
-  return [{ query: "", amount: "", manualIndex: "" }, { query: "", amount: "", manualIndex: "" }];
+  return [blankRow(), blankRow()];
 }
 function saveHoldings() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings)); } catch (e) {}
+}
+function loadFx() {
+  const saved = parseFloat(localStorage.getItem(FX_KEY));
+  return saved > 0 ? saved : DEFAULT_FX.USD;
+}
+function saveFx() {
+  try { localStorage.setItem(FX_KEY, String(fxRate)); } catch (e) {}
+}
+
+/* המרה למטבע הבסיס. מטבע הבסיס עצמו תמיד ביחס 1. */
+function toBase(amount, currency) {
+  if (currency === BASE_CURRENCY) return amount;
+  const rate = currency === "USD" ? fxRate : 1;
+  return amount * rate;
 }
 
 // מפעיל את שכבת הנתונים על כל שורה ומחזיר רק החזקות תקפות עם משקל
@@ -312,11 +340,19 @@ function resolveAll() {
       };
     }
     const amount = parseFloat(h.amount) || 0;
-    return res && amount > 0 ? { ...res, amount, color: PALETTE[i % PALETTE.length] } : null;
+    if (!res || amount <= 0) return null;
+    // מטבע: בחירה מפורשת של המשתמש גוברת על ברירת המחדל של הנייר
+    const currency = h.currency || res.currency || BASE_CURRENCY;
+    return {
+      ...res, amount, currency,
+      amountBase: toBase(amount, currency),   // הכל מומר לשקלים לפני שקילה
+      color: PALETTE[i % PALETTE.length],
+    };
   }).filter(Boolean);
 
-  const total = rows.reduce((s, r) => s + r.amount, 0);
-  rows.forEach((r) => (r.weight = total > 0 ? (r.amount / total) * 100 : 0));
+  // המשקלים נגזרים מהסכום המומר — אחרת דולר ושקל היו נספרים כשווים
+  const total = rows.reduce((s, r) => s + r.amountBase, 0);
+  rows.forEach((r) => (r.weight = total > 0 ? (r.amountBase / total) * 100 : 0));
   return { rows, total };
 }
 
@@ -326,6 +362,7 @@ function renderRows() {
   holdings.forEach((h, i) => {
     const res = resolveQuery(h.query);
     const unknown = !res && h.query.trim().length > 0;
+    const cur = h.currency || res?.currency || BASE_CURRENCY;
     const row = document.createElement("div");
     row.className = "holding-row";
     row.innerHTML = `
@@ -335,12 +372,18 @@ function renderRows() {
                placeholder="${T.searchPh}" aria-label="${T.searchPh}">
         <input type="number" class="hamt" value="${escapeAttr(h.amount)}" min="0" step="any"
                inputmode="decimal" placeholder="${T.amountPh}" aria-label="${T.amountPh}">
+        <select class="hcur" aria-label="${T.currencyLabel}">
+          ${Object.entries(CURRENCIES).map(([code, c]) =>
+            `<option value="${code}" ${cur === code ? "selected" : ""}>${c.symbol}</option>`).join("")}
+        </select>
         <button class="asset-del" title="×" aria-label="delete">×</button>
       </div>
       ${res ? `<div class="holding-meta">
                  <span class="hm-index">${res.sub}</span>
                  ${res.verified ? `<span class="hm-badge" title="${T.verified}">✓</span>` : ""}
                  ${res.fee != null ? `<span class="hm-fee">${res.fee}%</span>` : ""}
+                 ${cur !== BASE_CURRENCY && parseFloat(h.amount) > 0
+                   ? `<span class="hm-conv">≈ ${fmt(toBase(parseFloat(h.amount), cur))}</span>` : ""}
                </div>` : ""}
       ${unknown ? `<div class="holding-unknown">
                      <label>${T.unknownPrompt}</label>
@@ -358,7 +401,11 @@ function renderRows() {
     row.querySelector(".hamt").addEventListener("input", (e) => {
       if (parseFloat(e.target.value) < 0) e.target.value = "0";
       holdings[i].amount = e.target.value;
-      update();
+      renderRows(); update();   // רינדור מחדש כדי לרענן את שורת ההמרה לשקלים
+    });
+    row.querySelector(".hcur").addEventListener("change", (e) => {
+      holdings[i].currency = e.target.value;
+      renderRows(); update();
     });
     row.querySelector(".asset-del").addEventListener("click", () => {
       holdings.splice(i, 1);
@@ -441,6 +488,8 @@ function update() {
   const donut = $("#p-donut"), legend = $("#p-legend");
   if (!rows.length) {
     donut.innerHTML = drawDonut([]);
+    const t = $("#p-total");
+    if (t) t.textContent = fmt(0);
     legend.innerHTML = `<p class="empty-state">${T.emptyChart}</p>`;
     $("#p-metrics").innerHTML = "";
     $("#p-exposure").innerHTML = "";
@@ -450,11 +499,16 @@ function update() {
   }
 
   donut.innerHTML = drawDonut(rows);
+  // סכום התיק, תמיד במטבע הבסיס
+  const totalEl = $("#p-total");
+  if (totalEl) totalEl.textContent = fmt(rows.reduce((s, r) => s + r.amountBase, 0));
+
   legend.innerHTML = rows.slice().sort((a, b) => b.weight - a.weight).map((r) => `
     <div class="legend-item">
       <span class="dot" style="background:${r.color}"></span>
       <span class="lg-name">${r.label}</span>
-      <span class="lg-pct">${pct(r.weight)}</span>
+      <span class="lg-pct">${r.currency !== BASE_CURRENCY
+        ? fmt(r.amount, r.currency) + " · " : ""}${pct(r.weight)}</span>
     </div>`).join("");
 
   const pM = portfolioMatrix(rows);
@@ -529,10 +583,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const asOf = $("#data-as-of");
   if (asOf) asOf.textContent = DATA_AS_OF[LANG];
 
+  // שדה שער החליפין
+  const fxInput = $("#fx-rate");
+  if (fxInput) {
+    fxInput.value = fxRate;
+    fxInput.addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      if (v > 0) { fxRate = v; saveFx(); renderRows(); update(); }
+    });
+  }
+  const fxLabel = $("#fx-label");
+  if (fxLabel) fxLabel.textContent = T.fxLabel;
+  const totalLabel = $("#p-total-label");
+  if (totalLabel) totalLabel.textContent = T.totalLabel;
+
   renderRows();
   update();
   $("#add-holding")?.addEventListener("click", () => {
-    holdings.push({ query: "", amount: "", manualIndex: "" });
+    holdings.push(blankRow());
     renderRows(); update();
     const qs = document.querySelectorAll(".holding-row .hq");
     qs[qs.length - 1]?.focus();
@@ -540,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#reset-holdings")?.addEventListener("click", () => {
     if (!confirm(T.resetConfirm)) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    holdings = [{ query: "", amount: "", manualIndex: "" }, { query: "", amount: "", manualIndex: "" }];
+    holdings = [blankRow(), blankRow()];
     renderRows(); update();
   });
 });

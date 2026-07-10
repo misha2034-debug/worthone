@@ -51,12 +51,20 @@
             <datalist id="security-list"><!-- filled by portfolio.js --></datalist>
             <button id="add-holding" class="btn btn-ghost add-asset">＋ Add holding</button>
             <button id="reset-holdings" class="btn-reset" type="button">Reset</button>
+
+            <div class="fx-row">
+              <label for="fx-rate" id="fx-label">USD–ILS rate</label>
+              <input type="number" id="fx-rate" min="0.01" step="0.01" inputmode="decimal" aria-label="USD to ILS rate">
+              <span class="fx-hint">Update to the current rate</span>
+            </div>
+
             <p class="save-note">Your data is saved automatically on your device – it won't reset when you move between pages.</p>
           </div>
 
           <!-- Result side -->
           <div class="result-panel">
-            <div class="net-worth-label">Portfolio breakdown</div>
+            <div class="net-worth-label" id="p-total-label">Portfolio value</div>
+            <div class="net-worth-value" id="p-total">₪0</div>
             <div class="donut-wrap" id="p-donut"></div>
             <div class="legend" id="p-legend"></div>
           </div>
@@ -88,6 +96,11 @@
           <strong>approximate estimate of index composition</strong>, as of <span id="data-as-of">–</span>, and not the fund's
           actual holdings list — real composition changes daily. The numbers are meant to show orders of magnitude and trends,
           not accuracy to the percent. All calculation happens in your browser; no data is sent to a server.
+          <br><br>
+          <strong>On currency:</strong> dollar amounts are converted to shekels using the rate you enter, so that all
+          holdings are weighted on the same basis. The exchange rate is not fetched automatically — update it yourself.
+          Note that <strong>trading currency is not currency exposure</strong>: a shekel-traded fund tracking the
+          S&P 500 still holds US stocks, and is therefore exposed to the dollar.
           <br><br>
           The information on this site is general only and does not constitute investment advice or a recommendation to buy any security.
         </p>

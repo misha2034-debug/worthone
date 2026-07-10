@@ -133,10 +133,23 @@ const INDEX_RELATIONS = {
   "ta125|ta90": 20,
 };
 
+/* ---------- מטבעות ----------
+   currency הוא *מטבע המסחר* בלבד — המטבע שבו קונים את הנייר.
+   הוא אינו מעיד על חשיפת המטבע של הנכסים הבסיסיים: גם קרן שקלית על
+   מדד S&P 500 מחזיקה מניות אמריקאיות ולכן נותנת חשיפה לדולר.
+   הוא משמש כאן אך ורק כדי להמיר סכומים למטבע אחיד לפני חישוב המשקלים. */
+const CURRENCIES = {
+  ILS: { symbol: "₪", he: "שקל",  en: "Shekel" },
+  USD: { symbol: "$", he: "דולר", en: "Dollar" },
+};
+const BASE_CURRENCY = "ILS";        // המטבע שאליו מומר הכל
+const DEFAULT_FX = { USD: 3.70 };   // ברירת מחדל בלבד; המשתמש עורך ונשמר מקומית
+
 /* ---------- קרנות ----------
-   secNo:  מספר נייר ערך בבורסת תל אביב. null = אין, או טרם אומת מול מקור.
-   ticker: סימול לקרנות שאינן נסחרות בת"א (למשל קרנות אמריקאיות).
-   fee:    דמי ניהול שנתיים באחוזים (הערכה). null = לא ידוע.           */
+   secNo:    מספר נייר ערך בבורסת תל אביב. null = אין, או טרם אומת מול מקור.
+   ticker:   סימול לקרנות שאינן נסחרות בת"א (למשל קרנות אמריקאיות).
+   currency: מטבע המסחר. בהיעדרו — ILS.
+   fee:      דמי ניהול שנתיים באחוזים (הערכה). null = לא ידוע.         */
 const FUNDS = [
   { secNo: "1159250", verified: true,  index: "sp500",      fee: 0.07,
     name: { he: "iShares Core S&P 500 UCITS ETF", en: "iShares Core S&P 500 UCITS ETF" } },
@@ -145,8 +158,8 @@ const FUNDS = [
   { secNo: "5130620", verified: true,  index: "ta90",       fee: null,
     name: { he: 'MTF מחקה (4A) ת"א 90', en: "MTF Index Tracking (4A) TA-90" } },
 
-  // קרן אמריקאית (NYSE Arca) — אין לה מספר נייר בבורסת תל אביב.
-  { secNo: null, ticker: "ARTY", verified: false, index: "ai_tech", fee: null,
+  // קרן אמריקאית (NYSE Arca) — נסחרת בדולרים, אין לה מספר נייר בת"א.
+  { secNo: null, ticker: "ARTY", verified: false, index: "ai_tech", fee: null, currency: "USD",
     name: { he: "iShares Future AI & Tech ETF", en: "iShares Future AI & Tech ETF" } },
 
   { secNo: null, verified: false, index: "msci_world", fee: null,
@@ -178,7 +191,11 @@ const FUNDS = [
 ];
 
 /* ---------- מניות בודדות מוכרות ----------
-   מניה בודדת = 100% אזור אחד, 100% סקטור אחד.                        */
+   מניה בודדת = 100% אזור אחד, 100% סקטור אחד.
+   מטבע המסחר נגזר מהאזור: הישראליות נסחרות בת"א בשקלים, והשאר —
+   כולל האירופיות והאסייתיות שברשימה — נסחרות בארה"ב כ-ADR בדולרים.
+   בכל מקרה המשתמש יכול לשנות את המטבע בשורה עצמה.                    */
+const stockCurrency = (stock) => (stock.region === "israel" ? "ILS" : "USD");
 const STOCKS = [
   { ticker: "AAPL",  region: "us",     sector: "tech",          name: { he: "Apple", en: "Apple" } },
   { ticker: "MSFT",  region: "us",     sector: "tech",          name: { he: "Microsoft", en: "Microsoft" } },
