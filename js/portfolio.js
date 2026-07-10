@@ -395,13 +395,19 @@ function renderRows() {
                    </div>` : ""}
     `;
     row.querySelector(".hq").addEventListener("input", (e) => {
+      // שומרים את מיקום הסמן *לפני* הרינדור מחדש, אחרת הוא יחזור להתחלה
+      rememberCaret(e.target);
       holdings[i].query = e.target.value;
       renderRows(); update();
     });
     row.querySelector(".hamt").addEventListener("input", (e) => {
       if (parseFloat(e.target.value) < 0) e.target.value = "0";
       holdings[i].amount = e.target.value;
-      renderRows(); update();   // רינדור מחדש כדי לרענן את שורת ההמרה לשקלים
+      // בלי renderRows: input[type=number] לא תומך ב-setSelectionRange, ולכן
+      // בנייה מחדש של השורה הייתה מאבדת את הסמן ומהפכת את סדר הספרות.
+      // מרעננים רק את תווית ההמרה, במקום.
+      refreshConversion(row, i);
+      update();
     });
     row.querySelector(".hcur").addEventListener("change", (e) => {
       holdings[i].currency = e.target.value;
@@ -423,21 +429,59 @@ function renderRows() {
   restoreFocus();
 }
 
+/* שמירה ושחזור של מיקום הסמן סביב רינדור מחדש של הרשימה.
+
+   שתי מלכודות:
+   1. חייבים ללכוד את המיקום בכל אירוע input, לא רק ב-focusin. אחרת המיקום
+      תמיד 0, הסמן קופץ להתחלה אחרי כל תו, והטקסט נכנס בסדר הפוך.
+   2. input[type=number] אינו תומך בבחירת טקסט: selectionStart מחזיר null
+      ו-setSelectionRange זורק InvalidStateError. לכן pos עשוי להיות null,
+      ובמקרה כזה מסתפקים במיקוד בלי מיקום. */
 let focusState = null;
+
+function rememberCaret(el) {
+  const row = el.closest(".holding-row");
+  if (!row) return;
+  const idx = [...row.parentNode.children].indexOf(row);
+  let pos = null;
+  try { pos = el.selectionStart; } catch (e) { /* שדה מספרי — אין תמיכה */ }
+  focusState = { idx, cls: el.classList.contains("hq") ? "hq" : "hamt", pos };
+}
+
 document.addEventListener("focusin", (e) => {
-  if (e.target.classList?.contains("hq") || e.target.classList?.contains("hamt")) {
-    const row = e.target.closest(".holding-row");
-    const idx = [...row.parentNode.children].indexOf(row);
-    focusState = { idx, cls: e.target.classList.contains("hq") ? "hq" : "hamt", pos: e.target.selectionStart };
-  }
+  if (e.target.classList?.contains("hq") || e.target.classList?.contains("hamt"))
+    rememberCaret(e.target);
 });
+
 function restoreFocus() {
   if (!focusState) return;
   const rows = document.querySelectorAll(".holding-row");
   const el = rows[focusState.idx]?.querySelector("." + focusState.cls);
-  if (el) {
-    el.focus();
+  if (!el) return;
+  el.focus();
+  if (focusState.pos != null) {
     try { el.setSelectionRange(focusState.pos, focusState.pos); } catch (e) {}
+  }
+}
+
+/* ריענון נקודתי של תווית ההמרה לשקלים, בלי לבנות מחדש את השורה. */
+function refreshConversion(row, i) {
+  const meta = row.querySelector(".holding-meta");
+  if (!meta) return;
+  const res = resolveQuery(holdings[i].query);
+  const cur = holdings[i].currency || res?.currency || BASE_CURRENCY;
+  const amount = parseFloat(holdings[i].amount);
+  let el = meta.querySelector(".hm-conv");
+
+  if (cur !== BASE_CURRENCY && amount > 0) {
+    if (!el) {
+      el = document.createElement("span");
+      el.className = "hm-conv";
+      meta.appendChild(el);
+    }
+    el.textContent = "≈ " + fmt(toBase(amount, cur));
+  } else if (el) {
+    el.remove();
   }
 }
 
