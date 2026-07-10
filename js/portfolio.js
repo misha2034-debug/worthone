@@ -103,6 +103,7 @@ function resolveQuery(q) {
   if (!s) return null;
 
   const fund = FUNDS.find((f) => f.secNo === s) ||
+               FUNDS.find((f) => f.ticker && f.ticker.toLowerCase() === s) ||
                FUNDS.find((f) => f.name[LANG].toLowerCase() === s) ||
                FUNDS.find((f) => f.name[LANG].toLowerCase().includes(s) && s.length >= 3);
   if (fund) {
@@ -131,10 +132,24 @@ function resolveQuery(q) {
    ========================================================= */
 
 // חפיפה בין שתי מטריצות = Σ min(תא_א, תא_ב). תוצאה ב-0..100.
-function overlap(a, b) {
+function matrixOverlap(a, b) {
   let sum = 0;
   for (const k in a) if (k in b) sum += Math.min(a[k], b[k]);
   return sum;
+}
+
+/* חפיפה בין שתי החזקות.
+   אם ידוע לנו יחס מפורש בין שני המדדים (הכלה או זרות מוחלטת) — הוא גובר.
+   אחרת נופלים לחישוב על מטריצת האזור×סקטור, שהוא קירוב בלבד: הוא לא יודע
+   אילו חברות מרכיבות כל מדד, ולכן עלול לדווח חפיפה בין מדדים שאין להם אף
+   מניה משותפת. ראו INDEX_RELATIONS ב-portfolio-data.js. */
+function overlap(a, b) {
+  const ia = a.indexId, ib = b.indexId;
+  if (ia && ib && ia !== ib) {
+    const key = [ia, ib].sort().join("|");
+    if (key in INDEX_RELATIONS) return INDEX_RELATIONS[key];
+  }
+  return matrixOverlap(a.matrix, b.matrix);
 }
 
 // חשיפה מצרפית של התיק: ממוצע משוקלל של מטריצות ההחזקות
@@ -166,7 +181,7 @@ function effectiveBets(holdings) {
   for (let i = 0; i < holdings.length; i++)
     for (let j = 0; j < holdings.length; j++)
       q += (holdings[i].weight / 100) * (holdings[j].weight / 100) *
-           (overlap(holdings[i].matrix, holdings[j].matrix) / 100);
+           (overlap(holdings[i], holdings[j]) / 100);
   return q > 0 ? 1 / q : 0;
 }
 
@@ -176,7 +191,7 @@ function averageOverlap(holdings) {
   for (let i = 0; i < holdings.length; i++)
     for (let j = i + 1; j < holdings.length; j++) {
       const w = (holdings[i].weight / 100) * (holdings[j].weight / 100);
-      num += w * overlap(holdings[i].matrix, holdings[j].matrix);
+      num += w * overlap(holdings[i], holdings[j]);
       den += w;
     }
   return den > 0 ? num / den : 0;
@@ -258,7 +273,7 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
   let worst = null;
   for (let i = 0; i < holdings.length; i++)
     for (let j = i + 1; j < holdings.length; j++) {
-      const o = overlap(holdings[i].matrix, holdings[j].matrix);
+      const o = overlap(holdings[i], holdings[j]);
       if (!worst || o > worst.o) worst = { o, a: holdings[i], b: holdings[j] };
     }
   if (worst && worst.o >= 60) say(
@@ -471,7 +486,7 @@ function update() {
     const pairs = [];
     for (let i = 0; i < rows.length; i++)
       for (let j = i + 1; j < rows.length; j++)
-        pairs.push({ a: rows[i], b: rows[j], o: overlap(rows[i].matrix, rows[j].matrix) });
+        pairs.push({ a: rows[i], b: rows[j], o: overlap(rows[i], rows[j]) });
     pairs.sort((x, y) => y.o - x.o);
     $("#p-pairs").innerHTML = `<h3>${T.pairTitle}</h3>` + pairs.map((p) => `
       <div class="pair-row">
@@ -504,7 +519,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // רשימת השלמה אוטומטית: קרנות (עם מספר נייר אם אומת) + מניות
   const dl = $("#security-list");
   if (dl) dl.innerHTML =
-    FUNDS.map((f) => `<option value="${f.secNo || f.name[LANG]}">${f.name[LANG]}${f.secNo ? " · " + f.secNo : ""}</option>`).join("") +
+    FUNDS.map((f) => {
+      const key = f.secNo || f.ticker || f.name[LANG];   // מה שיוקלד בשדה
+      const hint = f.secNo || f.ticker;                   // מה שיוצג לצד השם
+      return `<option value="${key}">${f.name[LANG]}${hint ? " · " + hint : ""}</option>`;
+    }).join("") +
     STOCKS.map((s) => `<option value="${s.ticker}">${s.name[LANG]} · ${s.ticker}</option>`).join("");
 
   const asOf = $("#data-as-of");

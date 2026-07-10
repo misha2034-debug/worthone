@@ -77,6 +77,14 @@ const INDEX_PROFILES = {
     sectors: { financials: 30, tech: 18, real_estate: 16, industrials: 10, healthcare: 8,
                energy: 5, materials: 5, communication: 4, consumer_stap: 4 },
   },
+  // ת"א 90 = ת"א 125 בניכוי ת"א 35, כלומר המניות הבינוניות בישראל.
+  // בלי הבנקים הגדולים, ולכן משקל נדל"ן גבוה בהרבה ומשקל פיננסים נמוך יותר.
+  ta90: {
+    label: { he: 'ת"א 90', en: "TA-90" },
+    regions: { israel: 100 },
+    sectors: { real_estate: 30, financials: 15, industrials: 13, tech: 12, healthcare: 8,
+               energy: 7, consumer_stap: 5, materials: 5, communication: 3, utilities: 2 },
+  },
   europe_dev: {
     label: { he: "מדד אירופה (STOXX 600)", en: "Europe (STOXX 600)" },
     regions: { europe: 72, uk: 28 },
@@ -95,16 +103,51 @@ const INDEX_PROFILES = {
     sectors: { industrials: 23, consumer_disc: 18, tech: 15, financials: 13, healthcare: 8,
                communication: 8, consumer_stap: 6, materials: 5, real_estate: 2, utilities: 1, energy: 1 },
   },
+  // מדד נושאי (תמטי) — לא מדד שוק רחב. ריכוזיות סקטוריאלית קיצונית במכוון.
+  // הסקטורים כאן מדויקים לפי נתוני הקרן; הפילוח הגאוגרפי הוא הערכה
+  // (כ-83% ארה"ב, והשאר יפן, טאיוואן, צרפת, קנדה וישראל).
+  ai_tech: {
+    label: { he: "AI וטכנולוגיה גלובלית (תמטי)", en: "Global AI & Tech (thematic)" },
+    regions: { us: 83, em: 6, japan: 4, europe: 3, canada: 2, israel: 2 },
+    sectors: { tech: 87.84, industrials: 5.29, communication: 2.99, utilities: 1.61,
+               real_estate: 1.38, healthcare: 0.89 },
+  },
 };
 
-/* ---------- קרנות סל הנסחרות בתל אביב ----------
-   secNo: מספר נייר ערך. null = טרם אומת מול מקור רשמי (חיפוש לפי שם בלבד).
-   fee:   דמי ניהול שנתיים באחוזים (הערכה). null = לא ידוע.            */
+/* ---------- יחסים ידועים בין מדדים ----------
+   מודל ה"אזור × סקטור" לא יודע אילו *חברות* מרכיבות כל מדד. לכן שני מדדים
+   ישראליים בעלי תמהיל סקטוריאלי דומה נראים לו חופפים — גם כשאין ביניהם ולו
+   מניה אחת משותפת. כאן נרשמים יחסים שידועים במפורש, והם גוברים על החישוב.
+   הערך הוא אחוז החפיפה (0–100).
+
+   ta35|ta90   = 0  — יחס הגדרתי: ת"א 90 הוא ת"א 125 בניכוי ת"א 35,
+                      ולכן אין ביניהם אף מניה משותפת.
+   ta125|ta35  = 80 — יחס הכלה: ת"א 35 מהווה כ-80% משווי השוק של ת"א 125.
+   ta125|ta90  = 20 — יחס הכלה: היתרה.
+                      שני האחרונים הם הערכות משקל, לא ערכים הגדרתיים.
+
+   המפתח: צמד מזהי המדדים, ממוינים אלפביתית ומופרדים ב-"|".              */
+const INDEX_RELATIONS = {
+  "ta35|ta90": 0,
+  "ta125|ta35": 80,
+  "ta125|ta90": 20,
+};
+
+/* ---------- קרנות ----------
+   secNo:  מספר נייר ערך בבורסת תל אביב. null = אין, או טרם אומת מול מקור.
+   ticker: סימול לקרנות שאינן נסחרות בת"א (למשל קרנות אמריקאיות).
+   fee:    דמי ניהול שנתיים באחוזים (הערכה). null = לא ידוע.           */
 const FUNDS = [
   { secNo: "1159250", verified: true,  index: "sp500",      fee: 0.07,
     name: { he: "iShares Core S&P 500 UCITS ETF", en: "iShares Core S&P 500 UCITS ETF" } },
   { secNo: "1159235", verified: true,  index: "acwi",       fee: 0.20,
     name: { he: "iShares MSCI ACWI UCITS ETF", en: "iShares MSCI ACWI UCITS ETF" } },
+  { secNo: "5130620", verified: true,  index: "ta90",       fee: null,
+    name: { he: 'MTF מחקה (4A) ת"א 90', en: "MTF Index Tracking (4A) TA-90" } },
+
+  // קרן אמריקאית (NYSE Arca) — אין לה מספר נייר בבורסת תל אביב.
+  { secNo: null, ticker: "ARTY", verified: false, index: "ai_tech", fee: null,
+    name: { he: "iShares Future AI & Tech ETF", en: "iShares Future AI & Tech ETF" } },
 
   { secNo: null, verified: false, index: "msci_world", fee: null,
     name: { he: "iShares Core MSCI World UCITS ETF", en: "iShares Core MSCI World UCITS ETF" } },
