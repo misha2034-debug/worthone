@@ -1,0 +1,527 @@
+/* =========================================================
+   portfolio.js — מנוע מחשבון החפיפה והפיזור של WorthOne
+   כל החישוב מתבצע בדפדפן. שום נתון לא נשלח לשרת.
+
+   מודל: כל החזקה מיוצגת כמטריצת חשיפה על פני (אזור × סקטור).
+   החפיפה בין שתי החזקות = סכום המינימום בכל תא — מדד סטנדרטי
+   לחשיפה משותפת, בטווח 0%–100%.
+   ========================================================= */
+
+const LANG = document.documentElement.lang === "en" ? "en" : "he";
+const RTL = LANG === "he";
+
+const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
+                 "#a855f7", "#0ea5e9", "#6366f1", "#c026d3", "#2563eb"];
+
+const STORAGE_KEY = "worthone_portfolio_" + LANG;
+
+/* ---------- מחרוזות ממשק ---------- */
+const T = {
+  he: {
+    unnamed: "ללא שם", currency: "₪",
+    searchPh: "מספר נייר, שם קרן או סימול מניה",
+    amountPh: "0 ₪",
+    unknownPrompt: "לא מזוהה — בחרו את המדד שהנייר עוקב אחריו:",
+    chooseIndex: "בחרו מדד…",
+    singleStock: "מניה בודדת",
+    emptyChart: "הזינו את ההחזקות שלכם וכאן יופיע הפילוח",
+    emptyAnalysis: "הוסיפו שתי החזקות לפחות כדי לקבל ניתוח חפיפה.",
+    avgOverlap: "חפיפה ממוצעת בתיק",
+    effBets: "מספר הימורים עצמאיים",
+    topRegion: "החשיפה הגדולה ביותר",
+    avgFee: "דמי ניהול משוקללים",
+    unknownFee: "לא ידוע",
+    regionTitle: "חשיפה גאוגרפית",
+    sectorTitle: "חשיפה סקטוריאלית",
+    pairTitle: "חפיפה בין זוגות החזקות",
+    analysisTitle: "ניתוח התיק",
+    resetConfirm: "לאפס את כל ההחזקות?",
+    of: "מתוך",
+    verified: "מספר נייר מאומת",
+  },
+  en: {
+    unnamed: "Unnamed", currency: "₪",
+    searchPh: "Security number, fund name or stock ticker",
+    amountPh: "0 ₪",
+    unknownPrompt: "Not recognised — choose the index this security tracks:",
+    chooseIndex: "Choose an index…",
+    singleStock: "Single stock",
+    emptyChart: "Enter your holdings and the breakdown will appear here",
+    emptyAnalysis: "Add at least two holdings to get an overlap analysis.",
+    avgOverlap: "Average portfolio overlap",
+    effBets: "Effective independent bets",
+    topRegion: "Largest exposure",
+    avgFee: "Weighted management fee",
+    unknownFee: "Unknown",
+    regionTitle: "Geographic exposure",
+    sectorTitle: "Sector exposure",
+    pairTitle: "Overlap between pairs of holdings",
+    analysisTitle: "Portfolio analysis",
+    resetConfirm: "Reset all holdings?",
+    of: "of",
+    verified: "Verified security number",
+  },
+}[LANG];
+
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => "₪" + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const pct = (n) => n.toFixed(1) + "%";
+
+/* =========================================================
+   שכבת נתונים: פתרון קלט → החזקה מזוהה
+   ========================================================= */
+
+// מנרמל וקטור כך שיסתכם ל-100
+function normalise(vec) {
+  const sum = Object.values(vec).reduce((a, b) => a + b, 0);
+  if (sum <= 0) return {};
+  const out = {};
+  for (const k in vec) out[k] = (vec[k] / sum) * 100;
+  return out;
+}
+
+// מטריצת חשיפה: תא (אזור|סקטור) = משקל_אזור × משקל_סקטור / 100. הסכום = 100.
+function buildMatrix(regions, sectors) {
+  const r = normalise(regions), s = normalise(sectors);
+  const m = {};
+  for (const rk in r) for (const sk in s) m[rk + "|" + sk] = (r[rk] * s[sk]) / 100;
+  return m;
+}
+
+function matrixForIndex(indexId) {
+  const p = INDEX_PROFILES[indexId];
+  return buildMatrix(p.regions, p.sectors);
+}
+
+function matrixForStock(stock) {
+  return { [stock.region + "|" + stock.sector]: 100 };
+}
+
+// חיפוש: מספר נייר מדויק, סימול מדויק, או התאמת שם חלקית
+function resolveQuery(q) {
+  const s = q.trim().toLowerCase();
+  if (!s) return null;
+
+  const fund = FUNDS.find((f) => f.secNo === s) ||
+               FUNDS.find((f) => f.name[LANG].toLowerCase() === s) ||
+               FUNDS.find((f) => f.name[LANG].toLowerCase().includes(s) && s.length >= 3);
+  if (fund) {
+    return {
+      kind: "fund", label: fund.name[LANG], verified: fund.verified, fee: fund.fee,
+      indexId: fund.index, sub: INDEX_PROFILES[fund.index].label[LANG],
+      matrix: matrixForIndex(fund.index),
+    };
+  }
+
+  const stock = STOCKS.find((x) => x.ticker.toLowerCase() === s) ||
+                STOCKS.find((x) => x.name[LANG].toLowerCase() === s) ||
+                STOCKS.find((x) => x.name[LANG].toLowerCase().includes(s) && s.length >= 3);
+  if (stock) {
+    return {
+      kind: "stock", label: stock.name[LANG] + " (" + stock.ticker + ")", verified: false, fee: null,
+      indexId: null, sub: T.singleStock + " · " + REGIONS[stock.region][LANG] + " · " + SECTORS[stock.sector][LANG],
+      matrix: matrixForStock(stock),
+    };
+  }
+  return null;
+}
+
+/* =========================================================
+   מתמטיקה: חפיפה, ריכוזיות, חשיפה מצרפית
+   ========================================================= */
+
+// חפיפה בין שתי מטריצות = Σ min(תא_א, תא_ב). תוצאה ב-0..100.
+function overlap(a, b) {
+  let sum = 0;
+  for (const k in a) if (k in b) sum += Math.min(a[k], b[k]);
+  return sum;
+}
+
+// חשיפה מצרפית של התיק: ממוצע משוקלל של מטריצות ההחזקות
+function portfolioMatrix(holdings) {
+  const m = {};
+  for (const h of holdings)
+    for (const k in h.matrix) m[k] = (m[k] || 0) + (h.weight * h.matrix[k]) / 100;
+  return m;
+}
+
+// קיפול מטריצה לווקטור אזורים או סקטורים
+function collapse(matrix, axis) {
+  const idx = axis === "region" ? 0 : 1;
+  const out = {};
+  for (const k in matrix) {
+    const key = k.split("|")[idx];
+    out[key] = (out[key] || 0) + matrix[k];
+  }
+  return out;
+}
+
+/* "מספר הימורים עצמאיים" = 1 / (wᵀ·S·w), כש-S היא מטריצת החפיפה בין ההחזקות.
+   זו הכללה של מדד הרפינדל: כשאין חפיפה כלל (S = מטריצת היחידה) הנוסחה
+   מתכנסת ל-1/Σw² הרגיל. אבל כששתי קרנות חופפות, הן נספרות כהימור אחד —
+   וזה בדיוק מה שהכלי הזה אמור למדוד. האלכסון יוצא 1 אוטומטית, כי
+   overlap(m,m) = Σ min(m,m) = Σ m = 100. */
+function effectiveBets(holdings) {
+  let q = 0;
+  for (let i = 0; i < holdings.length; i++)
+    for (let j = 0; j < holdings.length; j++)
+      q += (holdings[i].weight / 100) * (holdings[j].weight / 100) *
+           (overlap(holdings[i].matrix, holdings[j].matrix) / 100);
+  return q > 0 ? 1 / q : 0;
+}
+
+// חפיפה ממוצעת משוקללת על פני כל זוגות ההחזקות
+function averageOverlap(holdings) {
+  let num = 0, den = 0;
+  for (let i = 0; i < holdings.length; i++)
+    for (let j = i + 1; j < holdings.length; j++) {
+      const w = (holdings[i].weight / 100) * (holdings[j].weight / 100);
+      num += w * overlap(holdings[i].matrix, holdings[j].matrix);
+      den += w;
+    }
+  return den > 0 ? num / den : 0;
+}
+
+/* =========================================================
+   ניתוח מילולי — נגזר מהמספרים, בלי המלצות השקעה
+   ========================================================= */
+function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
+  const out = [];
+  const regions = collapse(pMatrix, "region");
+  const sectors = collapse(pMatrix, "sector");
+  const topR = Object.entries(regions).sort((a, b) => b[1] - a[1])[0];
+  const topS = Object.entries(sectors).sort((a, b) => b[1] - a[1])[0];
+  const nRegions = Object.values(regions).filter((v) => v >= 5).length;
+
+  const say = (he, en, tone = "neutral") => out.push({ text: LANG === "he" ? he : en, tone });
+
+  /* --- חפיפה כוללת --- */
+  if (holdings.length >= 2) {
+    if (avgOv >= 70) say(
+      `החפיפה הממוצעת בין ההחזקות שלכם היא ${pct(avgOv)} — גבוהה מאוד. בפועל, רוב הכסף חשוף לאותן חברות ולאותם שווקים, כך שהוספת הקרנות זו לזו מוסיפה פחות פיזור ממה שנדמה.`,
+      `The average overlap between your holdings is ${pct(avgOv)} — very high. In practice most of your money is exposed to the same companies and markets, so holding these funds together adds less diversification than it appears.`,
+      "warn");
+    else if (avgOv >= 40) say(
+      `החפיפה הממוצעת בין ההחזקות היא ${pct(avgOv)} — בינונית. יש חפיפה מהותית, אך גם רכיבים שמוסיפים פיזור אמיתי.`,
+      `The average overlap between your holdings is ${pct(avgOv)} — moderate. There's meaningful overlap, but also components that add real diversification.`,
+      "neutral");
+    else say(
+      `החפיפה הממוצעת בין ההחזקות היא ${pct(avgOv)} — נמוכה. ההחזקות שלכם חשופות לשווקים ולסקטורים שונים במידה רבה.`,
+      `The average overlap between your holdings is ${pct(avgOv)} — low. Your holdings are exposed to largely different markets and sectors.`,
+      "good");
+  }
+
+  /* --- ריכוזיות גאוגרפית --- */
+  if (topR && topR[1] >= 75) say(
+    `${pct(topR[1])} מהתיק חשוף ל${REGIONS[topR[0]][LANG]}. גם אם אתם מחזיקים קרן "עולמית", המשקל בפועל של אזור בודד גבוה מאוד.`,
+    `${pct(topR[1])} of the portfolio is exposed to ${REGIONS[topR[0]].en}. Even if you hold a "global" fund, the effective weight of a single region is very high.`,
+    "warn");
+  else if (topR) say(
+    `החשיפה הגדולה ביותר היא ל${REGIONS[topR[0]][LANG]} (${pct(topR[1])}), והתיק פרוס על ${nRegions} אזורים במשקל של 5% ומעלה.`,
+    `The largest exposure is to ${REGIONS[topR[0]].en} (${pct(topR[1])}), and the portfolio spans ${nRegions} regions at 5% or more.`,
+    nRegions >= 3 ? "good" : "neutral");
+
+  /* --- ריכוזיות סקטוריאלית --- */
+  if (topS && topS[1] >= 35) say(
+    `${pct(topS[1])} מהתיק מרוכז בסקטור ${SECTORS[topS[0]][LANG]}. זהו הסקטור הדומיננטי, והתיק יושפע ממנו במידה ניכרת.`,
+    `${pct(topS[1])} of the portfolio is concentrated in ${SECTORS[topS[0]].en}. It is the dominant sector and will move the portfolio considerably.`,
+    "warn");
+
+  /* --- פיזור אפקטיבי ---
+     "הימורים עצמאיים" יכול לצנוח משתי סיבות שונות: משקל אחד ששולט,
+     או חפיפה גבוהה בין החזקות מאוזנות. נבחין ביניהן ע"י השוואה למדד
+     שמתעלם מחפיפה (1/Σw²) — אם הפער גדול, החפיפה היא האשמה. */
+  if (holdings.length >= 2) {
+    const eb = effBets.toFixed(1);
+    const nominal = 1 / holdings.reduce((s, h) => s + (h.weight / 100) ** 2, 0);
+    const overlapDriven = effBets < nominal * 0.75;
+
+    if (effBets < 1.6 && overlapDriven) say(
+      `למרות ${holdings.length} החזקות, התיק מתנהג כמו ${eb} החזקות עצמאיות בלבד. המשקלים דווקא מאוזנים — מה שמכווץ את הפיזור זו החפיפה הגבוהה בין ההחזקות עצמן.`,
+      `Despite ${holdings.length} holdings, the portfolio behaves like just ${eb} independent holdings. The weights are actually balanced — what collapses the diversification is the high overlap between the holdings themselves.`,
+      "warn");
+    else if (effBets < 1.6) say(
+      `למרות ${holdings.length} החזקות, התיק מתנהג כמו ${eb} החזקות עצמאיות בלבד — החזקה אחת שולטת במשקלה על התמונה.`,
+      `Despite ${holdings.length} holdings, the portfolio behaves like just ${eb} independent holdings — one holding dominates by weight.`,
+      "warn");
+    else if (overlapDriven) say(
+      `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${holdings.length}. החפיפה בין ההחזקות מקטינה את הפיזור האפקטיבי מתחת למספר ההחזקות בפועל.`,
+      `The portfolio behaves like ${eb} independent holdings out of ${holdings.length}. Overlap between holdings reduces the effective diversification below the nominal count.`,
+      "neutral");
+    else say(
+      `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${holdings.length} — פיזור אפקטיבי טוב ביחס למספר ההחזקות.`,
+      `The portfolio behaves like ${eb} independent holdings out of ${holdings.length} — good effective diversification relative to the number of holdings.`,
+      "good");
+  }
+
+  /* --- הזוג החופף ביותר --- */
+  let worst = null;
+  for (let i = 0; i < holdings.length; i++)
+    for (let j = i + 1; j < holdings.length; j++) {
+      const o = overlap(holdings[i].matrix, holdings[j].matrix);
+      if (!worst || o > worst.o) worst = { o, a: holdings[i], b: holdings[j] };
+    }
+  if (worst && worst.o >= 60) say(
+    `החפיפה הגדולה ביותר היא בין "${worst.a.label}" ל"${worst.b.label}" — ${pct(worst.o)}. השניים מכסים במידה רבה את אותו שוק.`,
+    `The largest overlap is between "${worst.a.label}" and "${worst.b.label}" — ${pct(worst.o)}. The two largely cover the same market.`,
+    "warn");
+
+  return out;
+}
+
+/* =========================================================
+   תצוגה
+   ========================================================= */
+let holdings = loadHoldings();
+
+function loadHoldings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (Array.isArray(saved) && saved.length) return saved;
+  } catch (e) {}
+  return [{ query: "", amount: "", manualIndex: "" }, { query: "", amount: "", manualIndex: "" }];
+}
+function saveHoldings() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings)); } catch (e) {}
+}
+
+// מפעיל את שכבת הנתונים על כל שורה ומחזיר רק החזקות תקפות עם משקל
+function resolveAll() {
+  const rows = holdings.map((h, i) => {
+    let res = resolveQuery(h.query);
+    if (!res && h.manualIndex && INDEX_PROFILES[h.manualIndex]) {
+      res = {
+        kind: "manual", label: h.query.trim() || T.unnamed, verified: false, fee: null,
+        indexId: h.manualIndex, sub: INDEX_PROFILES[h.manualIndex].label[LANG],
+        matrix: matrixForIndex(h.manualIndex),
+      };
+    }
+    const amount = parseFloat(h.amount) || 0;
+    return res && amount > 0 ? { ...res, amount, color: PALETTE[i % PALETTE.length] } : null;
+  }).filter(Boolean);
+
+  const total = rows.reduce((s, r) => s + r.amount, 0);
+  rows.forEach((r) => (r.weight = total > 0 ? (r.amount / total) * 100 : 0));
+  return { rows, total };
+}
+
+function renderRows() {
+  const wrap = $("#holdings-list");
+  wrap.innerHTML = "";
+  holdings.forEach((h, i) => {
+    const res = resolveQuery(h.query);
+    const unknown = !res && h.query.trim().length > 0;
+    const row = document.createElement("div");
+    row.className = "holding-row";
+    row.innerHTML = `
+      <div class="holding-main">
+        <span class="asset-dot" style="background:${PALETTE[i % PALETTE.length]}"></span>
+        <input type="text" class="hq" list="security-list" value="${escapeAttr(h.query)}"
+               placeholder="${T.searchPh}" aria-label="${T.searchPh}">
+        <input type="number" class="hamt" value="${escapeAttr(h.amount)}" min="0" step="any"
+               inputmode="decimal" placeholder="${T.amountPh}" aria-label="${T.amountPh}">
+        <button class="asset-del" title="×" aria-label="delete">×</button>
+      </div>
+      ${res ? `<div class="holding-meta">
+                 <span class="hm-index">${res.sub}</span>
+                 ${res.verified ? `<span class="hm-badge" title="${T.verified}">✓</span>` : ""}
+                 ${res.fee != null ? `<span class="hm-fee">${res.fee}%</span>` : ""}
+               </div>` : ""}
+      ${unknown ? `<div class="holding-unknown">
+                     <label>${T.unknownPrompt}</label>
+                     <select class="hidx">
+                       <option value="">${T.chooseIndex}</option>
+                       ${Object.entries(INDEX_PROFILES).map(([id, p]) =>
+                         `<option value="${id}" ${h.manualIndex === id ? "selected" : ""}>${p.label[LANG]}</option>`).join("")}
+                     </select>
+                   </div>` : ""}
+    `;
+    row.querySelector(".hq").addEventListener("input", (e) => {
+      holdings[i].query = e.target.value;
+      renderRows(); update();
+    });
+    row.querySelector(".hamt").addEventListener("input", (e) => {
+      if (parseFloat(e.target.value) < 0) e.target.value = "0";
+      holdings[i].amount = e.target.value;
+      update();
+    });
+    row.querySelector(".asset-del").addEventListener("click", () => {
+      holdings.splice(i, 1);
+      if (!holdings.length) holdings.push({ query: "", amount: "", manualIndex: "" });
+      renderRows(); update();
+    });
+    const sel = row.querySelector(".hidx");
+    if (sel) sel.addEventListener("change", (e) => {
+      holdings[i].manualIndex = e.target.value;
+      renderRows(); update();
+    });
+    wrap.appendChild(row);
+  });
+  // שמירת מיקוד בשדה שנערך, כדי שההקלדה לא תיקטע ברינדור מחדש
+  restoreFocus();
+}
+
+let focusState = null;
+document.addEventListener("focusin", (e) => {
+  if (e.target.classList?.contains("hq") || e.target.classList?.contains("hamt")) {
+    const row = e.target.closest(".holding-row");
+    const idx = [...row.parentNode.children].indexOf(row);
+    focusState = { idx, cls: e.target.classList.contains("hq") ? "hq" : "hamt", pos: e.target.selectionStart };
+  }
+});
+function restoreFocus() {
+  if (!focusState) return;
+  const rows = document.querySelectorAll(".holding-row");
+  const el = rows[focusState.idx]?.querySelector("." + focusState.cls);
+  if (el) {
+    el.focus();
+    try { el.setSelectionRange(focusState.pos, focusState.pos); } catch (e) {}
+  }
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+/* ---------- גרף עוגה ---------- */
+function drawDonut(items) {
+  const size = 240, r = 90, cx = size / 2, cy = size / 2, stroke = 36;
+  const C = 2 * Math.PI * r;
+  if (!items.length)
+    return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="empty">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="${stroke}"/></svg>`;
+
+  let offset = 0;
+  const arcs = items.map((it) => {
+    const len = (it.weight / 100) * C;
+    const seg = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${it.color}"
+      stroke-width="${stroke}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}"
+      transform="rotate(-90 ${cx} ${cy})"
+      style="transition:stroke-dasharray .4s ease, stroke-dashoffset .4s ease"/>`;
+    offset += len;
+    return seg;
+  }).join("");
+  return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="portfolio breakdown">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#f1f5f9" stroke-width="${stroke}"/>${arcs}</svg>`;
+}
+
+/* ---------- מד עמודות אופקי ---------- */
+function drawBars(vec, dict) {
+  const rows = Object.entries(vec).filter(([, v]) => v >= 0.5).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return "";
+  const max = rows[0][1];
+  return rows.map(([k, v]) => `
+    <div class="bar-row">
+      <span class="bar-label">${dict[k][LANG]}</span>
+      <span class="bar-track"><span class="bar-fill" style="width:${(v / max) * 100}%"></span></span>
+      <span class="bar-val">${pct(v)}</span>
+    </div>`).join("");
+}
+
+/* ---------- לוח המחוונים ---------- */
+function update() {
+  saveHoldings();
+  const { rows } = resolveAll();
+
+  const donut = $("#p-donut"), legend = $("#p-legend");
+  if (!rows.length) {
+    donut.innerHTML = drawDonut([]);
+    legend.innerHTML = `<p class="empty-state">${T.emptyChart}</p>`;
+    $("#p-metrics").innerHTML = "";
+    $("#p-exposure").innerHTML = "";
+    $("#p-pairs").innerHTML = "";
+    $("#p-analysis").innerHTML = `<p class="empty-state">${T.emptyAnalysis}</p>`;
+    return;
+  }
+
+  donut.innerHTML = drawDonut(rows);
+  legend.innerHTML = rows.slice().sort((a, b) => b.weight - a.weight).map((r) => `
+    <div class="legend-item">
+      <span class="dot" style="background:${r.color}"></span>
+      <span class="lg-name">${r.label}</span>
+      <span class="lg-pct">${pct(r.weight)}</span>
+    </div>`).join("");
+
+  const pM = portfolioMatrix(rows);
+  const regions = collapse(pM, "region");
+  const sectors = collapse(pM, "sector");
+  const avgOv = averageOverlap(rows);
+  const eb = effectiveBets(rows);
+  const topR = Object.entries(regions).sort((a, b) => b[1] - a[1])[0];
+
+  // דמי ניהול משוקללים — רק אם ידועים לכל ההחזקות בעלות מדד
+  const known = rows.filter((r) => r.fee != null);
+  const knownW = known.reduce((s, r) => s + r.weight, 0);
+  const feeTxt = knownW > 0
+    ? (known.reduce((s, r) => s + r.fee * r.weight, 0) / knownW).toFixed(2) + "%"
+    : T.unknownFee;
+
+  $("#p-metrics").innerHTML = `
+    ${metric(T.avgOverlap, rows.length >= 2 ? pct(avgOv) : "—", avgOv >= 70 ? "warn" : avgOv >= 40 ? "mid" : "good")}
+    ${metric(T.effBets, rows.length >= 2 ? eb.toFixed(1) : "—", eb >= 2.5 ? "good" : eb >= 1.6 ? "mid" : "warn")}
+    ${metric(T.topRegion, topR ? `${REGIONS[topR[0]][LANG]} · ${pct(topR[1])}` : "—", topR && topR[1] >= 75 ? "warn" : "good")}
+    ${metric(T.avgFee, feeTxt, "neutral")}`;
+
+  $("#p-exposure").innerHTML = `
+    <div class="exposure-col"><h3>${T.regionTitle}</h3>${drawBars(regions, REGIONS)}</div>
+    <div class="exposure-col"><h3>${T.sectorTitle}</h3>${drawBars(sectors, SECTORS)}</div>`;
+
+  // טבלת חפיפה זוגית
+  if (rows.length >= 2) {
+    const pairs = [];
+    for (let i = 0; i < rows.length; i++)
+      for (let j = i + 1; j < rows.length; j++)
+        pairs.push({ a: rows[i], b: rows[j], o: overlap(rows[i].matrix, rows[j].matrix) });
+    pairs.sort((x, y) => y.o - x.o);
+    $("#p-pairs").innerHTML = `<h3>${T.pairTitle}</h3>` + pairs.map((p) => `
+      <div class="pair-row">
+        <span class="pair-names"><span class="dot" style="background:${p.a.color}"></span>${p.a.label}
+          <span class="pair-x">↔</span>
+          <span class="dot" style="background:${p.b.color}"></span>${p.b.label}</span>
+        <span class="bar-track"><span class="bar-fill ${p.o >= 70 ? "hot" : p.o >= 40 ? "mid" : ""}"
+          style="width:${p.o}%"></span></span>
+        <span class="bar-val">${pct(p.o)}</span>
+      </div>`).join("");
+  } else $("#p-pairs").innerHTML = "";
+
+  const analysis = buildAnalysis(rows, pM, avgOv, eb);
+  $("#p-analysis").innerHTML = `<h3>${T.analysisTitle}</h3>` + (
+    rows.length < 2
+      ? `<p class="empty-state">${T.emptyAnalysis}</p>`
+      : `<ul class="analysis-list">${analysis.map((a) =>
+          `<li class="an-${a.tone}">${a.text}</li>`).join("")}</ul>`);
+}
+
+function metric(label, value, tone) {
+  return `<div class="metric metric-${tone}">
+    <span class="metric-val">${value}</span>
+    <span class="metric-label">${label}</span>
+  </div>`;
+}
+
+/* ---------- אתחול ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  // רשימת השלמה אוטומטית: קרנות (עם מספר נייר אם אומת) + מניות
+  const dl = $("#security-list");
+  if (dl) dl.innerHTML =
+    FUNDS.map((f) => `<option value="${f.secNo || f.name[LANG]}">${f.name[LANG]}${f.secNo ? " · " + f.secNo : ""}</option>`).join("") +
+    STOCKS.map((s) => `<option value="${s.ticker}">${s.name[LANG]} · ${s.ticker}</option>`).join("");
+
+  const asOf = $("#data-as-of");
+  if (asOf) asOf.textContent = DATA_AS_OF[LANG];
+
+  renderRows();
+  update();
+  $("#add-holding")?.addEventListener("click", () => {
+    holdings.push({ query: "", amount: "", manualIndex: "" });
+    renderRows(); update();
+    const qs = document.querySelectorAll(".holding-row .hq");
+    qs[qs.length - 1]?.focus();
+  });
+  $("#reset-holdings")?.addEventListener("click", () => {
+    if (!confirm(T.resetConfirm)) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    holdings = [{ query: "", amount: "", manualIndex: "" }, { query: "", amount: "", manualIndex: "" }];
+    renderRows(); update();
+  });
+});

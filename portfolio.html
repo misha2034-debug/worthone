@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#4f46e5">
-  <title>המחשבון | WorthOne – חשב את ההון העצמי שלך</title>
-  <meta name="description" content="הזן את הנכסים שלך וקבל מיד את ההון העצמי הכולל, מוצג בגרף עוגה אינטראקטיבי. חינמי ופרטי לחלוטין.">
-  <link rel="canonical" href="https://worthone.example/tool.html">
+  <title>מחשבון חפיפה ופיזור | WorthOne – נתחו את תיק ההשקעות שלכם</title>
+  <meta name="description" content="הזינו את קרנות הסל והמניות שלכם וגלו את מידת החפיפה ביניהן, את החשיפה הגאוגרפית והסקטוריאלית האמיתית של התיק, וניתוח אובייקטיבי של הפיזור.">
+  <link rel="canonical" href="https://worthone.example/portfolio.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
         <li><a href="faq.html">שאלות נפוצות</a></li>
         <li><a href="blog/index.html">בלוג</a></li>
         <li><a href="contact.html">צור קשר</a></li>
-        <li><a href="en/tool.html" class="lang-switch" aria-label="English">EN</a></li>
+        <li><a href="en/portfolio.html" class="lang-switch" aria-label="English">EN</a></li>
         <li><a href="tool.html" class="btn btn-primary">התחל עכשיו</a></li>
       </ul>
     </div>
@@ -34,8 +34,8 @@
   <main>
     <div class="page-hero">
       <div class="container">
-        <h1>המחשבון שלך</h1>
-        <p>הזן את הסכומים בכל נכס – ההון העצמי והגרף מתעדכנים אוטומטית. הנתונים נשארים במכשיר שלך בלבד.</p>
+        <h1>כמה באמת מפוזר התיק שלכם?</h1>
+        <p>הזינו את קרנות הסל והמניות שבחשבון המסחר שלכם. המחשבון יראה את הנתח של כל אחת, את החשיפה האמיתית של התיק, ואת מידת החפיפה ביניהן.</p>
       </div>
     </div>
 
@@ -45,23 +45,51 @@
 
           <!-- צד ההזנה -->
           <div class="assets-panel">
-            <h3 style="margin-bottom:16px;">הנכסים שלי</h3>
-            <div id="assets-list"><!-- שורות נוצרות ע"י tool.js --></div>
-            <button id="add-asset" class="btn btn-ghost add-asset">＋ הוסף נכס</button>
-            <button id="reset-assets" class="btn-reset" type="button">איפוס</button>
+            <h3 style="margin-bottom:16px;">ההחזקות שלי</h3>
+            <div id="holdings-list"><!-- שורות נוצרות ע"י portfolio.js --></div>
+            <datalist id="security-list"><!-- ממולא ע"י portfolio.js --></datalist>
+            <button id="add-holding" class="btn btn-ghost add-asset">＋ הוסף החזקה</button>
+            <button id="reset-holdings" class="btn-reset" type="button">איפוס</button>
             <p class="save-note">הנתונים נשמרים אוטומטית במכשיר שלך – הם לא יתאפסו במעבר בין דפים.</p>
-            <p class="save-note">משקיעים בקרנות סל? בדקו את <a href="portfolio.html">החפיפה והפיזור בתיק שלכם</a>.</p>
           </div>
 
           <!-- צד התוצאה -->
           <div class="result-panel">
-            <div class="net-worth-label">ההון העצמי שלך</div>
-            <div class="net-worth-value" id="net-worth">₪0</div>
-            <div class="donut-wrap" id="donut"><!-- גרף SVG נוצר ע"י tool.js --></div>
-            <div class="legend" id="legend"><!-- מקרא נוצר ע"י tool.js --></div>
+            <div class="net-worth-label">הרכב התיק</div>
+            <div class="donut-wrap" id="p-donut"></div>
+            <div class="legend" id="p-legend"></div>
           </div>
 
         </div>
+      </div>
+    </section>
+
+    <section style="padding-top:44px;">
+      <div class="container">
+        <div class="metrics-grid" id="p-metrics"></div>
+        <div class="exposure-grid" id="p-exposure"></div>
+      </div>
+    </section>
+
+    <section style="padding-top:44px;">
+      <div class="container">
+        <div id="p-pairs"></div>
+      </div>
+    </section>
+
+    <section style="padding-top:36px; padding-bottom:56px;">
+      <div class="container">
+        <div id="p-analysis"></div>
+
+        <p class="data-note">
+          <strong>איך זה מחושב:</strong> כל החזקה מיוצגת כפילוח חשיפה על פני אזורים גאוגרפיים וסקטורים.
+          החפיפה בין שתי החזקות היא סכום החשיפה המשותפת שלהן. ההרכבים הם <strong>הערכה מקורבת של הרכב המדדים</strong>,
+          נכון ל<span id="data-as-of">–</span>, ולא רשימת ההחזקות בפועל של הקרן — הרכב אמיתי משתנה מדי יום.
+          המספרים נועדו להראות סדרי גודל ומגמות, לא דיוק לאחוז.
+          כל החישוב מתבצע בדפדפן שלכם; שום נתון לא נשלח לשרת.
+          <br><br>
+          המידע באתר הוא כללי בלבד ואינו מהווה ייעוץ השקעות או המלצה לרכישת נייר ערך כלשהו.
+        </p>
       </div>
     </section>
   </main>
@@ -91,12 +119,13 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 WorthOne. כל הזכויות שמורות.</span>
-        <a href="en/tool.html" class="footer-lang">English</a>
+        <a href="en/portfolio.html" class="footer-lang">English</a>
       </div>
     </div>
   </footer>
 
   <script src="js/main.js"></script>
-  <script src="js/tool.js"></script>
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/portfolio.js"></script>
 </body>
 </html>

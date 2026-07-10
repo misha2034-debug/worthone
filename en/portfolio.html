@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Overlap &amp; Diversification Calculator | WorthOne</title>
+  <meta name="description" content="Enter your ETFs and stocks to discover how much they overlap, your portfolio's true geographic and sector exposure, and an objective analysis of its diversification.">
+  <link rel="canonical" href="https://worthone.example/en/portfolio.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand">Worth<b>One</b></a>
+      <button class="nav-toggle" aria-label="Menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="../portfolio.html" class="lang-switch" aria-label="עברית">עברית</a></li>
+        <li><a href="tool.html" class="btn btn-primary">Get started</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-hero">
+      <div class="container">
+        <h1>How diversified is your portfolio, really?</h1>
+        <p>Enter the ETFs and stocks in your trading account. The calculator shows each one's share, your portfolio's true exposure, and how much they overlap.</p>
+      </div>
+    </div>
+
+    <section style="padding-top:40px;">
+      <div class="container">
+        <div class="tool-wrap">
+
+          <!-- Input side -->
+          <div class="assets-panel">
+            <h3 style="margin-bottom:16px;">My holdings</h3>
+            <div id="holdings-list"><!-- rows rendered by portfolio.js --></div>
+            <datalist id="security-list"><!-- filled by portfolio.js --></datalist>
+            <button id="add-holding" class="btn btn-ghost add-asset">＋ Add holding</button>
+            <button id="reset-holdings" class="btn-reset" type="button">Reset</button>
+            <p class="save-note">Your data is saved automatically on your device – it won't reset when you move between pages.</p>
+          </div>
+
+          <!-- Result side -->
+          <div class="result-panel">
+            <div class="net-worth-label">Portfolio breakdown</div>
+            <div class="donut-wrap" id="p-donut"></div>
+            <div class="legend" id="p-legend"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section style="padding-top:44px;">
+      <div class="container">
+        <div class="metrics-grid" id="p-metrics"></div>
+        <div class="exposure-grid" id="p-exposure"></div>
+      </div>
+    </section>
+
+    <section style="padding-top:44px;">
+      <div class="container">
+        <div id="p-pairs"></div>
+      </div>
+    </section>
+
+    <section style="padding-top:36px; padding-bottom:56px;">
+      <div class="container">
+        <div id="p-analysis"></div>
+
+        <p class="data-note">
+          <strong>How this is calculated:</strong> each holding is represented as an exposure breakdown across geographic
+          regions and sectors. The overlap between two holdings is the sum of their shared exposure. These compositions are an
+          <strong>approximate estimate of index composition</strong>, as of <span id="data-as-of">–</span>, and not the fund's
+          actual holdings list — real composition changes daily. The numbers are meant to show orders of magnitude and trends,
+          not accuracy to the percent. All calculation happens in your browser; no data is sent to a server.
+          <br><br>
+          The information on this site is general only and does not constitute investment advice or a recommendation to buy any security.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand">Worth<b>One</b></a>
+          <p class="tag">The platform that brings all your finances into one place, so you know exactly how much you're worth.</p>
+        </div>
+        <div class="footer-col"><h4>Product</h4><ul>
+          <li><a href="tool.html">The calculator</a></li>
+          <li><a href="portfolio.html">Overlap calculator</a></li>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="blog/index.html">Blog</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Company</h4><ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="terms.html">Terms of Use</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul></div>
+        <div class="footer-col"><h4>Ready?</h4>
+          <a href="tool.html" class="btn btn-primary footer-cta">Get started →</a></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 WorthOne. All rights reserved.</span>
+        <a href="../portfolio.html" class="footer-lang">עברית</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/portfolio-data.js"></script>
+  <script src="../js/portfolio.js"></script>
+</body>
+</html>
