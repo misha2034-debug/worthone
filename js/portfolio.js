@@ -231,17 +231,25 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
       `החפיפה הממוצעת בין ההחזקות היא ${pct(avgOv)} — בינונית. יש חפיפה מהותית, אך גם רכיבים שמוסיפים פיזור אמיתי.`,
       `The average overlap between your holdings is ${pct(avgOv)} — moderate. There's meaningful overlap, but also components that add real diversification.`,
       "neutral");
+    // ניסוח זהיר: זהו ממוצע בין *זוגות*. הוא לא מעיד לבדו על פיזור התיק
+    // כולו, שמושפע גם מריכוז המשקלים. ראו את סעיף הפיזור האפקטיבי.
     else say(
-      `החפיפה הממוצעת בין ההחזקות היא ${pct(avgOv)} — נמוכה. ההחזקות שלכם חשופות לשווקים ולסקטורים שונים במידה רבה.`,
-      `The average overlap between your holdings is ${pct(avgOv)} — low. Your holdings are exposed to largely different markets and sectors.`,
+      `החפיפה הממוצעת בין זוגות ההחזקות היא ${pct(avgOv)} — נמוכה. ההחזקות מכסות שווקים וסקטורים שונים זו מזו. שימו לב שזהו ממוצע בין זוגות בלבד, ולא מדד לפיזור התיק כולו.`,
+      `The average overlap between pairs of holdings is ${pct(avgOv)} — low. The holdings cover markets and sectors that differ from one another. Note this is an average across pairs only, not a measure of the portfolio's overall diversification.`,
       "good");
   }
 
-  /* --- ריכוזיות גאוגרפית --- */
+  /* --- ריכוזיות גאוגרפית ---
+     שלוש מדרגות. בלי מדרגת הביניים, חשיפה של 64% לאזור בודד הייתה מוצגת
+     בנימה חיובית רק משום שלא חצתה את סף האזהרה. */
   if (topR && topR[1] >= 75) say(
     `${pct(topR[1])} מהתיק חשוף ל${REGIONS[topR[0]][LANG]}. גם אם אתם מחזיקים קרן "עולמית", המשקל בפועל של אזור בודד גבוה מאוד.`,
     `${pct(topR[1])} of the portfolio is exposed to ${REGIONS[topR[0]].en}. Even if you hold a "global" fund, the effective weight of a single region is very high.`,
     "warn");
+  else if (topR && topR[1] >= 55) say(
+    `${pct(topR[1])} מהתיק חשוף ל${REGIONS[topR[0]][LANG]} — נתח מהותי, גם אם הוא לא קיצוני. התיק פרוס על ${nRegions} אזורים במשקל של 5% ומעלה, אך אזור אחד עדיין מכריע.`,
+    `${pct(topR[1])} of the portfolio is exposed to ${REGIONS[topR[0]].en} — a substantial share, though not extreme. The portfolio spans ${nRegions} regions at 5% or more, but one region still dominates.`,
+    "neutral");
   else if (topR) say(
     `החשיפה הגדולה ביותר היא ל${REGIONS[topR[0]][LANG]} (${pct(topR[1])}), והתיק פרוס על ${nRegions} אזורים במשקל של 5% ומעלה.`,
     `The largest exposure is to ${REGIONS[topR[0]].en} (${pct(topR[1])}), and the portfolio spans ${nRegions} regions at 5% or more.`,
@@ -254,30 +262,51 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
     "warn");
 
   /* --- פיזור אפקטיבי ---
-     "הימורים עצמאיים" יכול לצנוח משתי סיבות שונות: משקל אחד ששולט,
-     או חפיפה גבוהה בין החזקות מאוזנות. נבחין ביניהן ע"י השוואה למדד
-     שמתעלם מחפיפה (1/Σw²) — אם הפער גדול, החפיפה היא האשמה. */
-  if (holdings.length >= 2) {
-    const eb = effBets.toFixed(1);
-    const nominal = 1 / holdings.reduce((s, h) => s + (h.weight / 100) ** 2, 0);
-    const overlapDriven = effBets < nominal * 0.75;
+     הירידה ממספר ההחזקות אל "ההימורים העצמאיים" נובעת משני גורמים נפרדים,
+     והיא מתפרקת אליהם בשרשרת:
 
-    if (effBets < 1.6 && overlapDriven) say(
-      `למרות ${holdings.length} החזקות, התיק מתנהג כמו ${eb} החזקות עצמאיות בלבד. המשקלים דווקא מאוזנים — מה שמכווץ את הפיזור זו החפיפה הגבוהה בין ההחזקות עצמן.`,
-      `Despite ${holdings.length} holdings, the portfolio behaves like just ${eb} independent holdings. The weights are actually balanced — what collapses the diversification is the high overlap between the holdings themselves.`,
-      "warn");
-    else if (effBets < 1.6) say(
-      `למרות ${holdings.length} החזקות, התיק מתנהג כמו ${eb} החזקות עצמאיות בלבד — החזקה אחת שולטת במשקלה על התמונה.`,
-      `Despite ${holdings.length} holdings, the portfolio behaves like just ${eb} independent holdings — one holding dominates by weight.`,
-      "warn");
-    else if (overlapDriven) say(
-      `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${holdings.length}. החפיפה בין ההחזקות מקטינה את הפיזור האפקטיבי מתחת למספר ההחזקות בפועל.`,
-      `The portfolio behaves like ${eb} independent holdings out of ${holdings.length}. Overlap between holdings reduces the effective diversification below the nominal count.`,
-      "neutral");
-    else say(
-      `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${holdings.length} — פיזור אפקטיבי טוב ביחס למספר ההחזקות.`,
-      `The portfolio behaves like ${eb} independent holdings out of ${holdings.length} — good effective diversification relative to the number of holdings.`,
-      "good");
+         N  ──(ריכוז משקלים)──▶  nominal  ──(חפיפה)──▶  effBets
+
+     nominal = 1/Σw² הוא הפיזור האפקטיבי אילו ההחזקות היו זרות לחלוטין;
+     כל הירידה מ-N אליו נובעת ממשקלים לא שווים. הירידה הנוספת ממנו אל
+     effBets נובעת אך ורק מהחפיפה. חשוב לדווח על שניהם: תיק עם ארבע החזקות
+     שאחת מהן היא חצי מהתיק יכול להראות "חפיפה נמוכה" ועדיין להיות מרוכז. */
+  if (holdings.length >= 2) {
+    const n = holdings.length;
+    const nominal = 1 / holdings.reduce((s, h) => s + (h.weight / 100) ** 2, 0);
+    const eb = effBets.toFixed(1), nom = nominal.toFixed(1);
+
+    const weightLoss = n - nominal;         // כמה "אבד" בגלל ריכוז משקלים
+    const overlapLoss = nominal - effBets;  // כמה אבד בנוסף בגלל חפיפה
+    const weightsMatter = nominal < n * 0.85;
+    const overlapMatters = effBets < nominal * 0.85;
+    // אזהרה גם במונחים מוחלטים (פחות משני הימורים) וגם ביחס למספר ההחזקות:
+    // 1.7 מתוך 4 הוא ריכוז אמיתי, גם אם 1.7 לבדו אינו נמוך במיוחד.
+    const tone = (effBets < 1.6 || effBets < n * 0.45) ? "warn"
+               : effBets < n * 0.65 ? "neutral" : "good";
+
+    if (weightsMatter && overlapMatters) {
+      const bigger = weightLoss >= overlapLoss;
+      say(
+        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. שני גורמים פועלים כאן: ריכוז המשקלים לבדו מוריד אותו ל-${nom}, והחפיפה בין ההחזקות מורידה אותו הלאה ל-${eb}. הגורם הדומיננטי הוא ${bigger ? "ריכוז המשקלים" : "החפיפה"}.`,
+        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. Two forces are at work: weight concentration alone brings it down to ${nom}, and overlap between holdings brings it further down to ${eb}. The dominant factor is ${bigger ? "weight concentration" : "overlap"}.`,
+        tone);
+    } else if (weightsMatter) {
+      say(
+        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. הסיבה היא ריכוז המשקלים — החזקה אחת תופסת נתח גדול מדי. החפיפה בין ההחזקות כמעט לא משפיעה כאן.`,
+        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. The cause is weight concentration — one holding takes too large a share. Overlap between holdings has almost no effect here.`,
+        tone);
+    } else if (overlapMatters) {
+      say(
+        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. המשקלים דווקא מאוזנים — מה שמקטין את הפיזור זו החפיפה בין ההחזקות עצמן.`,
+        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. The weights are actually balanced — what reduces the diversification is the overlap between the holdings themselves.`,
+        tone);
+    } else {
+      say(
+        `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${n} — המשקלים מאוזנים והחפיפה נמוכה.`,
+        `The portfolio behaves like ${eb} independent holdings out of ${n} — the weights are balanced and the overlap is low.`,
+        "good");
+    }
   }
 
   /* --- הזוג החופף ביותר --- */
