@@ -112,6 +112,39 @@ const INDEX_PROFILES = {
     sectors: { tech: 87.84, industrials: 5.29, communication: 2.99, utilities: 1.61,
                real_estate: 1.38, healthcare: 0.89 },
   },
+  // תמטי — ביטחון. סקטורים מדויקים בקירוב; גאוגרפיה לפי נתוני הקרן:
+  // ~55% ארה"ב, ~45% מחוץ לה (בריטניה, גרמניה, צרפת, איטליה, קוריאה, ישראל).
+  defense: {
+    label: { he: "טכנולוגיית ביטחון (תמטי)", en: "Defense Tech (thematic)" },
+    regions: { us: 55, europe: 24, uk: 11, em: 7, israel: 3 },
+    sectors: { industrials: 74, tech: 20, communication: 3, materials: 2, consumer_disc: 1 },
+  },
+  // תמטי — אנרגיה גרעינית. סקטורים מדויקים לפי הקרן; גאוגרפיה הערכה.
+  nuclear: {
+    label: { he: "אורניום ואנרגיה גרעינית (תמטי)", en: "Uranium & Nuclear (thematic)" },
+    regions: { us: 30, europe: 20, em: 16, japan: 12, canada: 12, apac_dev: 10 },
+    sectors: { energy: 50, utilities: 30, industrials: 18, tech: 2 },
+  },
+  // תמטי — כריית אורניום. גאוגרפיה לפי הקרן: כ-50% קנדה, ולא אמריקאי בעיקרו.
+  uranium: {
+    label: { he: "כריית אורניום (תמטי)", en: "Uranium Miners (thematic)" },
+    regions: { canada: 50, em: 20, apac_dev: 12, us: 6, uk: 6, japan: 6 },
+    sectors: { materials: 68, energy: 20, utilities: 8, industrials: 4 },
+  },
+  // שוק אמריקאי כולל (Total US Market) — כל השוק, לא רק 500 הגדולות.
+  us_total: {
+    label: { he: "שוק אמריקאי כולל (Total US)", en: "Total US Market" },
+    regions: { us: 100 },
+    sectors: { tech: 30, financials: 13, healthcare: 12, consumer_disc: 10, industrials: 9,
+               communication: 8, consumer_stap: 5, energy: 4, real_estate: 3, utilities: 3, materials: 3 },
+  },
+  // שוק בינלאומי כולל, מחוץ לארה"ב (Total International ex-US).
+  intl_total: {
+    label: { he: "בינלאומי כולל (ללא ארה\"ב)", en: "Total International (ex-US)" },
+    regions: { europe: 33, em: 27, japan: 14, apac_dev: 10, uk: 9, canada: 7 },
+    sectors: { financials: 24, industrials: 14, tech: 13, consumer_disc: 11, healthcare: 9,
+               consumer_stap: 8, materials: 7, communication: 5, energy: 5, utilities: 3, real_estate: 1 },
+  },
 };
 
 /* ---------- יחסים ידועים בין מדדים ----------
@@ -131,6 +164,8 @@ const INDEX_RELATIONS = {
   "ta35|ta90": 0,
   "ta125|ta35": 80,
   "ta125|ta90": 20,
+  // הכלה: מדד S&P 500 מהווה כ-80% משווי השוק האמריקאי הכולל, וכולו מוכל בו.
+  "sp500|us_total": 80,
 };
 
 /* ---------- מטבעות ----------
@@ -161,6 +196,18 @@ const FUNDS = [
   // קרן אמריקאית (NYSE Arca) — נסחרת בדולרים, אין לה מספר נייר בת"א.
   { secNo: null, ticker: "ARTY", verified: false, index: "ai_tech", fee: null, currency: "USD",
     name: { he: "iShares Future AI & Tech ETF", en: "iShares Future AI & Tech ETF" } },
+
+  // קרנות אמריקאיות נוספות הנסחרות בדולרים.
+  { secNo: null, ticker: "VTI",  verified: false, index: "us_total",   fee: 0.03, currency: "USD",
+    name: { he: "Vanguard Total Stock Market ETF", en: "Vanguard Total Stock Market ETF" } },
+  { secNo: null, ticker: "VXUS", verified: false, index: "intl_total", fee: 0.05, currency: "USD",
+    name: { he: "Vanguard Total International Stock ETF", en: "Vanguard Total International Stock ETF" } },
+  { secNo: null, ticker: "SHLD", verified: false, index: "defense",    fee: null, currency: "USD",
+    name: { he: "Global X Defense Tech ETF", en: "Global X Defense Tech ETF" } },
+  { secNo: null, ticker: "NLR",  verified: false, index: "nuclear",    fee: null, currency: "USD",
+    name: { he: "VanEck Uranium and Nuclear ETF", en: "VanEck Uranium and Nuclear ETF" } },
+  { secNo: null, ticker: "URA",  verified: false, index: "uranium",    fee: null, currency: "USD",
+    name: { he: "Global X Uranium ETF", en: "Global X Uranium ETF" } },
 
   { secNo: null, verified: false, index: "msci_world", fee: null,
     name: { he: "iShares Core MSCI World UCITS ETF", en: "iShares Core MSCI World UCITS ETF" } },
