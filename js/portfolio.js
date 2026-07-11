@@ -30,8 +30,8 @@ const T = {
     singleStock: "מניה בודדת",
     emptyChart: "הזינו את ההחזקות שלכם וכאן יופיע הפילוח",
     emptyAnalysis: "הוסיפו שתי החזקות לפחות כדי לקבל ניתוח חפיפה.",
-    avgOverlap: "חפיפה ממוצעת בתיק",
-    effBets: "מספר הימורים עצמאיים",
+    avgOverlap: "כמה ההחזקות דומות",
+    effBets: "כמו כמה החזקות שונות",
     topRegion: "החשיפה הגדולה ביותר",
     avgFee: "דמי ניהול משוקללים",
     unknownFee: "לא ידוע",
@@ -55,8 +55,8 @@ const T = {
     singleStock: "Single stock",
     emptyChart: "Enter your holdings and the breakdown will appear here",
     emptyAnalysis: "Add at least two holdings to get an overlap analysis.",
-    avgOverlap: "Average portfolio overlap",
-    effBets: "Effective independent bets",
+    avgOverlap: "How similar the holdings are",
+    effBets: "Like how many different holdings",
     topRegion: "Largest exposure",
     avgFee: "Weighted management fee",
     unknownFee: "Unknown",
@@ -224,18 +224,16 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
   /* --- חפיפה כוללת --- */
   if (holdings.length >= 2) {
     if (avgOv >= 70) say(
-      `החפיפה הממוצעת בין ההחזקות שלכם היא ${pct(avgOv)} — גבוהה מאוד. בפועל, רוב הכסף חשוף לאותן חברות ולאותם שווקים, כך שהוספת הקרנות זו לזו מוסיפה פחות פיזור ממה שנדמה.`,
-      `The average overlap between your holdings is ${pct(avgOv)} — very high. In practice most of your money is exposed to the same companies and markets, so holding these funds together adds less diversification than it appears.`,
+      `ההחזקות שלכם דומות מאוד זו לזו (חפיפה ממוצעת ${pct(avgOv)}). בפועל אתם קונים שוב ושוב את אותן חברות ואותם שווקים, כך שלהחזיק את כולן יחד מוסיף הרבה פחות פיזור ממה שנראה.`,
+      `Your holdings are very similar to one another (average overlap ${pct(avgOv)}). In practice you're buying the same companies and markets over and over, so holding them all together adds far less diversification than it appears.`,
       "warn");
     else if (avgOv >= 40) say(
-      `החפיפה הממוצעת בין ההחזקות היא ${pct(avgOv)} — בינונית. יש חפיפה מהותית, אך גם רכיבים שמוסיפים פיזור אמיתי.`,
-      `The average overlap between your holdings is ${pct(avgOv)} — moderate. There's meaningful overlap, but also components that add real diversification.`,
+      `יש דמיון בינוני בין ההחזקות (חפיפה ממוצעת ${pct(avgOv)}) — חלקן מחזיקות נכסים דומים, אבל יש גם כאלה שבאמת מוסיפות פיזור.`,
+      `There's moderate similarity between your holdings (average overlap ${pct(avgOv)}) — some hold similar assets, but others genuinely add diversification.`,
       "neutral");
-    // ניסוח זהיר: זהו ממוצע בין *זוגות*. הוא לא מעיד לבדו על פיזור התיק
-    // כולו, שמושפע גם מריכוז המשקלים. ראו את סעיף הפיזור האפקטיבי.
     else say(
-      `החפיפה הממוצעת בין זוגות ההחזקות היא ${pct(avgOv)} — נמוכה. ההחזקות מכסות שווקים וסקטורים שונים זו מזו. שימו לב שזהו ממוצע בין זוגות בלבד, ולא מדד לפיזור התיק כולו.`,
-      `The average overlap between pairs of holdings is ${pct(avgOv)} — low. The holdings cover markets and sectors that differ from one another. Note this is an average across pairs only, not a measure of the portfolio's overall diversification.`,
+      `ההחזקות שלכם שונות זו מזו (חפיפה ממוצעת נמוכה, ${pct(avgOv)}) — כל אחת מחזיקה נכסים אחרים. זהו סימן טוב, אבל הוא לבדו לא מספיק כדי לומר שהתיק מפוזר — צריך לבדוק גם איך הכסף מחולק (ראו בהמשך).`,
+      `Your holdings differ from one another (low average overlap, ${pct(avgOv)}) — each holds different assets. That's a good sign, but on its own it isn't enough to call the portfolio diversified — how the money is split matters too (see below).`,
       "good");
   }
 
@@ -243,16 +241,16 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
      שלוש מדרגות. בלי מדרגת הביניים, חשיפה של 64% לאזור בודד הייתה מוצגת
      בנימה חיובית רק משום שלא חצתה את סף האזהרה. */
   if (topR && topR[1] >= 75) say(
-    `${pct(topR[1])} מהתיק חשוף ל${REGIONS[topR[0]][LANG]}. גם אם אתם מחזיקים קרן "עולמית", המשקל בפועל של אזור בודד גבוה מאוד.`,
-    `${pct(topR[1])} of the portfolio is exposed to ${REGIONS[topR[0]].en}. Even if you hold a "global" fund, the effective weight of a single region is very high.`,
+    `${pct(topR[1])} מהכסף שלכם חשוף לשוק אחד — ${REGIONS[topR[0]][LANG]}. כמעט כל התיק תלוי בשוק הזה, גם אם יש לכם קרן ש"נשמעת עולמית" (הרבה קרנות כאלה מחזיקות בעיקר ${REGIONS[topR[0]][LANG]}).`,
+    `${pct(topR[1])} of your money is exposed to a single market — ${REGIONS[topR[0]].en}. Almost the whole portfolio depends on that market, even if you hold a fund that "sounds global" (many such funds hold mostly ${REGIONS[topR[0]].en}).`,
     "warn");
   else if (topR && topR[1] >= 55) say(
-    `${pct(topR[1])} מהתיק חשוף ל${REGIONS[topR[0]][LANG]} — נתח מהותי, גם אם הוא לא קיצוני. התיק פרוס על ${nRegions} אזורים במשקל של 5% ומעלה, אך אזור אחד עדיין מכריע.`,
-    `${pct(topR[1])} of the portfolio is exposed to ${REGIONS[topR[0]].en} — a substantial share, though not extreme. The portfolio spans ${nRegions} regions at 5% or more, but one region still dominates.`,
+    `${pct(topR[1])} מהכסף שלכם חשוף ל${REGIONS[topR[0]][LANG]} — נתח גדול, גם אם לא קיצוני. שאר הכסף מגיע לאזורים נוספים בעולם, אבל אזור אחד עדיין קובע את הטון.`,
+    `${pct(topR[1])} of your money is exposed to ${REGIONS[topR[0]].en} — a large share, though not extreme. The rest reaches other regions, but one region still sets the tone.`,
     "neutral");
   else if (topR) say(
-    `החשיפה הגדולה ביותר היא ל${REGIONS[topR[0]][LANG]} (${pct(topR[1])}), והתיק פרוס על ${nRegions} אזורים במשקל של 5% ומעלה.`,
-    `The largest exposure is to ${REGIONS[topR[0]].en} (${pct(topR[1])}), and the portfolio spans ${nRegions} regions at 5% or more.`,
+    `החשיפה הגדולה ביותר שלכם היא ל${REGIONS[topR[0]][LANG]} (${pct(topR[1])} מהתיק), והשאר מחולק יפה בין אזורים נוספים בעולם.`,
+    `Your largest exposure is to ${REGIONS[topR[0]].en} (${pct(topR[1])} of the portfolio), and the rest is nicely spread across other regions.`,
     nRegions >= 3 ? "good" : "neutral");
 
   /* --- ריכוזיות סקטוריאלית --- */
@@ -274,7 +272,7 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
   if (holdings.length >= 2) {
     const n = holdings.length;
     const nominal = 1 / holdings.reduce((s, h) => s + (h.weight / 100) ** 2, 0);
-    const eb = effBets.toFixed(1), nom = nominal.toFixed(1);
+    const eb = effBets.toFixed(1);
 
     const weightLoss = n - nominal;         // כמה "אבד" בגלל ריכוז משקלים
     const overlapLoss = nominal - effBets;  // כמה אבד בנוסף בגלל חפיפה
@@ -288,23 +286,23 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
     if (weightsMatter && overlapMatters) {
       const bigger = weightLoss >= overlapLoss;
       say(
-        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. שני גורמים פועלים כאן: ריכוז המשקלים לבדו מוריד אותו ל-${nom}, והחפיפה בין ההחזקות מורידה אותו הלאה ל-${eb}. הגורם הדומיננטי הוא ${bigger ? "ריכוז המשקלים" : "החפיפה"}.`,
-        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. Two forces are at work: weight concentration alone brings it down to ${nom}, and overlap between holdings brings it further down to ${eb}. The dominant factor is ${bigger ? "weight concentration" : "overlap"}.`,
+        `יש לכם ${n} החזקות, אבל בפועל התיק מתנהג כאילו יש בו רק כ-${eb} החזקות שונות. שתי סיבות לכך: חלק גדול מהכסף מרוכז בהחזקה אחת או שתיים, וגם חלק מההחזקות מחזיקות נכסים דומים ולכן "כפולות" זו לזו. המשמעותי יותר כאן הוא ${bigger ? "ריכוז הכסף בהחזקה בודדת" : "הדמיון בין ההחזקות"}.`,
+        `You have ${n} holdings, but in practice the portfolio behaves as if it holds only about ${eb} different ones. Two reasons: much of the money sits in one or two holdings, and some holdings own similar assets and so "double up." The bigger factor here is ${bigger ? "money concentrated in a single holding" : "the similarity between holdings"}.`,
         tone);
     } else if (weightsMatter) {
       say(
-        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. הסיבה היא ריכוז המשקלים — החזקה אחת תופסת נתח גדול מדי. החפיפה בין ההחזקות כמעט לא משפיעה כאן.`,
-        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. The cause is weight concentration — one holding takes too large a share. Overlap between holdings has almost no effect here.`,
+        `יש לכם ${n} החזקות, אבל בפועל התיק מתנהג כאילו יש בו רק כ-${eb} שונות. הסיבה: חלק גדול מהכסף מרוכז בהחזקה אחת, והיא זו שקובעת את התמונה. ההחזקות עצמן דווקא שונות זו מזו.`,
+        `You have ${n} holdings, but in practice the portfolio behaves as if it holds only about ${eb} different ones. The reason: much of the money is concentrated in a single holding, and it drives the picture. The holdings themselves are actually quite different from each other.`,
         tone);
     } else if (overlapMatters) {
       say(
-        `מתוך ${n} החזקות, התיק מתנהג כמו ${eb} עצמאיות. המשקלים דווקא מאוזנים — מה שמקטין את הפיזור זו החפיפה בין ההחזקות עצמן.`,
-        `Out of ${n} holdings, the portfolio behaves like ${eb} independent ones. The weights are actually balanced — what reduces the diversification is the overlap between the holdings themselves.`,
+        `יש לכם ${n} החזקות, אבל בפועל התיק מתנהג כאילו יש בו רק כ-${eb} שונות. הכסף אמנם מחולק ביניהן במאוזן, אבל חלקן מחזיקות נכסים דומים — כלומר אתם קונים פחות או יותר את אותו דבר כמה פעמים.`,
+        `You have ${n} holdings, but in practice the portfolio behaves as if it holds only about ${eb} different ones. The money is split evenly between them, but some hold similar assets — meaning you're buying more or less the same thing several times.`,
         tone);
     } else {
       say(
-        `התיק מתנהג כמו ${eb} החזקות עצמאיות מתוך ${n} — המשקלים מאוזנים והחפיפה נמוכה.`,
-        `The portfolio behaves like ${eb} independent holdings out of ${n} — the weights are balanced and the overlap is low.`,
+        `התיק שלכם מפוזר יפה: ${n} ההחזקות גם מחולקות במשקל מאוזן וגם מחזיקות נכסים שונים זו מזו, כך שכל אחת באמת תורמת לפיזור.`,
+        `Your portfolio is well spread: the ${n} holdings are both evenly weighted and hold assets different from one another, so each one genuinely adds to the diversification.`,
         "good");
     }
   }
@@ -317,8 +315,8 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
       if (!worst || o > worst.o) worst = { o, a: holdings[i], b: holdings[j] };
     }
   if (worst && worst.o >= 60) say(
-    `החפיפה הגדולה ביותר היא בין "${worst.a.label}" ל"${worst.b.label}" — ${pct(worst.o)}. השניים מכסים במידה רבה את אותו שוק.`,
-    `The largest overlap is between "${worst.a.label}" and "${worst.b.label}" — ${pct(worst.o)}. The two largely cover the same market.`,
+    `הזוג הכי דומה בתיק הוא "${worst.a.label}" ו"${worst.b.label}" — הם חופפים ב-${pct(worst.o)}, כלומר מחזיקים בגדול את אותו שוק. אם אתם מחזיקים את שניהם, שווה לשקול אם באמת צריך את שניהם.`,
+    `The most similar pair in your portfolio is "${worst.a.label}" and "${worst.b.label}" — they overlap ${pct(worst.o)}, meaning they largely hold the same market. If you hold both, it's worth asking whether you really need both.`,
     "warn");
 
   return out;
