@@ -255,6 +255,8 @@ section { padding: 70px 0; }
 .prose p, .prose li { color: #334155; margin-bottom: 12px; }
 .prose ul, .prose ol { padding-inline-start: 22px; margin-bottom: 12px; }
 .prose .updated { color: var(--muted); font-size: .9rem; margin-bottom: 30px; }
+/* טקסט המאמרים אחיד — בלי כתב נטוי. תגית <em> נשמרת לנגישות אך מוצגת רגיל. */
+.prose em, .article-body em { font-style: normal; }
 
 /* =========================================================
    FAQ (אקורדיון)
