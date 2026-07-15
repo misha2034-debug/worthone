@@ -103,11 +103,11 @@ const INDEX_PROFILES = {
     sectors: { industrials: 23, consumer_disc: 18, tech: 15, financials: 13, healthcare: 8,
                communication: 8, consumer_stap: 6, materials: 5, real_estate: 2, utilities: 1, energy: 1 },
   },
-  // מדד נושאי (תמטי) — לא מדד שוק רחב. ריכוזיות סקטוריאלית קיצונית במכוון.
+  // מדד נושאי — לא מדד שוק רחב. ריכוזיות סקטוריאלית קיצונית במכוון.
   // הסקטורים כאן מדויקים לפי נתוני הקרן; הפילוח הגאוגרפי הוא הערכה
   // (כ-83% ארה"ב, והשאר יפן, טאיוואן, צרפת, קנדה וישראל).
   ai_tech: {
-    label: { he: "AI וטכנולוגיה גלובלית (תמטי)", en: "Global AI & Tech (thematic)" },
+    label: { he: "AI וטכנולוגיה גלובלית", en: "Global AI & Tech" },
     regions: { us: 83, em: 6, japan: 4, europe: 3, canada: 2, israel: 2 },
     sectors: { tech: 87.84, industrials: 5.29, communication: 2.99, utilities: 1.61,
                real_estate: 1.38, healthcare: 0.89 },
@@ -115,19 +115,19 @@ const INDEX_PROFILES = {
   // תמטי — ביטחון. סקטורים מדויקים בקירוב; גאוגרפיה לפי נתוני הקרן:
   // ~55% ארה"ב, ~45% מחוץ לה (בריטניה, גרמניה, צרפת, איטליה, קוריאה, ישראל).
   defense: {
-    label: { he: "טכנולוגיית ביטחון (תמטי)", en: "Defense Tech (thematic)" },
+    label: { he: "טכנולוגיית ביטחון", en: "Defense Tech" },
     regions: { us: 55, europe: 24, uk: 11, em: 7, israel: 3 },
     sectors: { industrials: 74, tech: 20, communication: 3, materials: 2, consumer_disc: 1 },
   },
   // תמטי — אנרגיה גרעינית. סקטורים מדויקים לפי הקרן; גאוגרפיה הערכה.
   nuclear: {
-    label: { he: "אורניום ואנרגיה גרעינית (תמטי)", en: "Uranium & Nuclear (thematic)" },
+    label: { he: "אורניום ואנרגיה גרעינית", en: "Uranium & Nuclear" },
     regions: { us: 30, europe: 20, em: 16, japan: 12, canada: 12, apac_dev: 10 },
     sectors: { energy: 50, utilities: 30, industrials: 18, tech: 2 },
   },
   // תמטי — כריית אורניום. גאוגרפיה לפי הקרן: כ-50% קנדה, ולא אמריקאי בעיקרו.
   uranium: {
-    label: { he: "כריית אורניום (תמטי)", en: "Uranium Miners (thematic)" },
+    label: { he: "כריית אורניום", en: "Uranium Miners" },
     regions: { canada: 50, em: 20, apac_dev: 12, us: 6, uk: 6, japan: 6 },
     sectors: { materials: 68, energy: 20, utilities: 8, industrials: 4 },
   },
@@ -145,6 +145,43 @@ const INDEX_PROFILES = {
     sectors: { financials: 24, industrials: 14, tech: 13, consumer_disc: 11, healthcare: 9,
                consumer_stap: 8, materials: 7, communication: 5, energy: 5, utilities: 3, real_estate: 1 },
   },
+};
+
+/* ---------- הסבר קצר לכל מדד: מה בפועל אתם מחזיקים כשמשקיעים בו ----------
+   מספרי החברות/המדינות הם הערכה מקורבת (כמו כל הנתונים כאן), ומנוסחים ב"כ-". */
+const INDEX_BLURBS = {
+  sp500:      { he: '500 החברות הגדולות בבורסה האמריקאית — חשיפה מרוכזת לכלכלת ארה"ב.',
+                en: "The 500 largest US companies — concentrated exposure to the US economy." },
+  acwi:       { he: 'מדד עולמי רחב: כ-3,000 חברות מ-48 מדינות, מפותחות ומתעוררות (כ-63% מהמשקל בארה"ב).',
+                en: "A broad global index: ~3,000 companies from 48 developed and emerging countries (~63% weighted to the US)." },
+  msci_world: { he: 'מדד עולמי של שווקים מפותחים בלבד: כ-1,400 חברות מ-23 מדינות, בלי שווקים מתעוררים.',
+                en: "A developed-markets global index: ~1,400 companies from 23 countries, without emerging markets." },
+  nasdaq100:  { he: '100 החברות הגדולות בנאסד"ק — הטיה חזקה מאוד לטכנולוגיה אמריקאית.',
+                en: "The 100 largest Nasdaq companies — a very strong tilt to US technology." },
+  ta35:       { he: '35 החברות הגדולות בבורסת תל אביב — הליבה של השוק הישראלי.',
+                en: "The 35 largest companies on the Tel Aviv exchange — the core of the Israeli market." },
+  ta125:      { he: '125 החברות הגדולות בבורסת תל אביב — תמונה רחבה של השוק הישראלי.',
+                en: "The 125 largest Tel Aviv companies — a broad view of the Israeli market." },
+  ta90:       { he: '90 החברות הבינוניות בתל אביב (ת"א 125 פחות ת"א 35) — השוק הישראלי בלי החברות הגדולות ביותר.',
+                en: "The 90 mid-cap Tel Aviv companies (TA-125 minus TA-35) — the Israeli market without its largest companies." },
+  europe_dev: { he: 'כ-600 חברות גדולות ובינוניות מ-17 מדינות באירופה.',
+                en: "~600 large and mid-cap companies from 17 European countries." },
+  emerging:   { he: 'אלפי חברות משווקים מתעוררים (סין, הודו, טאיוואן, ברזיל ועוד) — ללא מדינות מפותחות.',
+                en: "Thousands of companies from emerging markets (China, India, Taiwan, Brazil and more) — no developed markets." },
+  japan_idx:  { he: 'מאות חברות יפניות גדולות ובינוניות — חשיפה ממוקדת לכלכלת יפן בלבד.',
+                en: "Hundreds of large and mid-cap Japanese companies — exposure focused on Japan alone." },
+  us_total:   { he: 'כמעט כל השוק האמריקאי הנסחר — אלפי חברות, מהגדולות ועד הקטנות.',
+                en: "Almost the entire investable US market — thousands of companies, from the largest to the smallest." },
+  intl_total: { he: 'כל העולם מלבד ארה"ב — אלפי חברות ממדינות מפותחות ומתעוררות כאחד.',
+                en: "The whole world except the US — thousands of companies from both developed and emerging markets." },
+  ai_tech:    { he: 'קרן ממוקדת בבינה מלאכותית וטכנולוגיה — כ-66 חברות בלבד, מרוכזת כמעט כולה בסקטור אחד. לא פיזור רחב.',
+                en: "A fund focused on AI and technology — only ~66 companies, almost entirely in one sector. Not broad diversification." },
+  defense:    { he: 'קרן ממוקדת בחברות ביטחון וטכנולוגיה צבאית — מרוכזת בסקטור התעשייה, עם חשיפה גם לאירופה.',
+                en: "A fund focused on defense and military-tech companies — concentrated in industrials, with European exposure too." },
+  nuclear:    { he: 'קרן ממוקדת באנרגיה גרעינית ואורניום — סקטור צר של חברות אנרגיה, תשתיות וכרייה.',
+                en: "A fund focused on nuclear energy and uranium — a narrow slice of energy, utility and mining companies." },
+  uranium:    { he: 'קרן ממוקדת בחברות כריית אורניום — סקטור צר מאוד, ומוטה מאוד לקנדה.',
+                en: "A fund focused on uranium-mining companies — a very narrow sector, heavily tilted to Canada." },
 };
 
 /* ---------- יחסים ידועים בין מדדים ----------

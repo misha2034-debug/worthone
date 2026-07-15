@@ -38,6 +38,7 @@ const T = {
     regionTitle: "חשיפה גאוגרפית",
     sectorTitle: "חשיפה סקטוריאלית",
     pairTitle: "חפיפה בין זוגות החזקות",
+    holdingsTitle: "מה כל קרן בתיק נותנת לך",
     analysisTitle: "ניתוח התיק",
     resetConfirm: "לאפס את כל ההחזקות?",
     of: "מתוך",
@@ -63,6 +64,7 @@ const T = {
     regionTitle: "Geographic exposure",
     sectorTitle: "Sector exposure",
     pairTitle: "Overlap between pairs of holdings",
+    holdingsTitle: "What each fund in your portfolio gives you",
     analysisTitle: "Portfolio analysis",
     resetConfirm: "Reset all holdings?",
     of: "of",
@@ -565,6 +567,7 @@ function update() {
     $("#p-metrics").innerHTML = "";
     $("#p-exposure").innerHTML = "";
     $("#p-pairs").innerHTML = "";
+    const h = $("#p-holdings"); if (h) h.innerHTML = "";
     $("#p-analysis").innerHTML = `<p class="empty-state">${T.emptyAnalysis}</p>`;
     return;
   }
@@ -623,6 +626,25 @@ function update() {
         <span class="bar-val">${pct(p.o)}</span>
       </div>`).join("");
   } else $("#p-pairs").innerHTML = "";
+
+  // מה כל קרן נותנת לך — הסבר חשיפה לכל מדד ייחודי בתיק.
+  // מדלגים על מניות בודדות (indexId ריק) ועל כפילויות של אותו מדד.
+  const holdingsEl = $("#p-holdings");
+  if (holdingsEl) {
+    const seen = new Set();
+    const explained = rows.filter((r) => {
+      if (!r.indexId || !INDEX_BLURBS[r.indexId] || seen.has(r.indexId)) return false;
+      seen.add(r.indexId);
+      return true;
+    });
+    holdingsEl.innerHTML = explained.length
+      ? `<h3>${T.holdingsTitle}</h3>` + explained.map((r) => `
+          <div class="holding-explain">
+            <span class="dot" style="background:${r.color}"></span>
+            <span><strong>${r.label}</strong> — ${INDEX_BLURBS[r.indexId][LANG]}</span>
+          </div>`).join("")
+      : "";
+  }
 
   const analysis = buildAnalysis(rows, pM, avgOv, eb);
   $("#p-analysis").innerHTML = `<h3>${T.analysisTitle}</h3>` + (
