@@ -3,8 +3,8 @@
    All calculation runs in the user's browser. No data is sent to a server.
    ========================================================= */
 
-const PALETTE = ["#4f46e5", "#7c3aed", "#06b6d4", "#8b5cf6", "#3b82f6",
-                 "#a855f7", "#0ea5e9", "#6366f1", "#c026d3", "#2563eb"];
+const PALETTE = ["#4f46e5", "#14b8a6", "#f59e0b", "#ec4899", "#22c55e", "#8b5cf6",
+                 "#3b82f6", "#ef4444", "#06b6d4", "#a855f7"];
 
 // Suggested default asset types (the user can rename them)
 const DEFAULT_ASSETS = [
