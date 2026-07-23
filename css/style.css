@@ -611,11 +611,21 @@ html[dir="ltr"] .prose ol { padding-inline-start: 22px; }
 }
 .holding-main .hcur:focus { outline: none; border-color: var(--blue); }
 
-/* הסכום המומר לשקלים, מוצג לצד הנייר */
+/* הסכום המומר לשקלים, מוצג לצד הנייר — עם שדה הניתן לעריכה ידנית */
 .hm-conv {
+  display: inline-flex; align-items: center; gap: 3px;
   background: #eef2ff; color: var(--blue); border-radius: 999px;
-  padding: 1px 9px; direction: ltr; font-weight: 600;
+  padding: 2px 10px; direction: ltr; font-weight: 600;
 }
+.hm-conv .hils {
+  width: 84px; border: none; background: transparent; color: var(--blue);
+  font-family: inherit; font-weight: 700; font-size: .95em; text-align: center;
+  border-bottom: 1px dashed var(--blue); padding: 0 2px;
+  -moz-appearance: textfield;
+}
+.hm-conv .hils::-webkit-outer-spin-button,
+.hm-conv .hils::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.hm-conv .hils:focus { outline: none; border-bottom-style: solid; }
 
 .fx-row {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;

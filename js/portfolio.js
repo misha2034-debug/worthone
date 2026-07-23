@@ -24,6 +24,7 @@ const T = {
     amountPh: "0",
     currencyLabel: "מטבע",
     fxLabel: "שער דולר–שקל",
+    ilsLabel: "ערכו ידנית את השווי המדויק בשקלים",
     totalLabel: "שווי התיק",
     unknownPrompt: "לא מזוהה — בחרו את המדד שהנייר עוקב אחריו:",
     chooseIndex: "בחרו מדד…",
@@ -50,6 +51,7 @@ const T = {
     amountPh: "0",
     currencyLabel: "Currency",
     fxLabel: "USD–ILS rate",
+    ilsLabel: "Edit the exact shekel value manually",
     totalLabel: "Portfolio value",
     unknownPrompt: "Not recognised — choose the index this security tracks:",
     chooseIndex: "Choose an index…",
@@ -327,7 +329,7 @@ function buildAnalysis(holdings, pMatrix, avgOv, effBets) {
 /* =========================================================
    תצוגה
    ========================================================= */
-const blankRow = () => ({ query: "", amount: "", manualIndex: "", currency: "" });
+const blankRow = () => ({ query: "", amount: "", manualIndex: "", currency: "", ilsOverride: "" });
 
 let holdings = loadHoldings();
 let fxRate = loadFx();   // כמה שקלים שווה דולר אחד
@@ -357,6 +359,18 @@ function toBase(amount, currency) {
   return amount * rate;
 }
 
+// האם למשתמש יש דריסה ידנית תקפה של השווי בשקלים עבור החזקה זו?
+function hasIlsOverride(h) {
+  return h.ilsOverride != null && h.ilsOverride !== "" && parseFloat(h.ilsOverride) > 0;
+}
+
+// השווי בשקלים שיוצג בשדה: דריסה ידנית אם קיימת, אחרת המרה לפי השער.
+function ilsDisplay(h, currency) {
+  if (hasIlsOverride(h)) return parseFloat(h.ilsOverride);
+  const amt = parseFloat(h.amount);
+  return amt > 0 ? Math.round(toBase(amt, currency)) : "";
+}
+
 // מפעיל את שכבת הנתונים על כל שורה ומחזיר רק החזקות תקפות עם משקל
 function resolveAll() {
   const rows = holdings.map((h, i) => {
@@ -372,9 +386,13 @@ function resolveAll() {
     if (!res || amount <= 0) return null;
     // מטבע: בחירה מפורשת של המשתמש גוברת על ברירת המחדל של הנייר
     const currency = h.currency || res.currency || BASE_CURRENCY;
+    // שווי בשקלים לצורך שקילה: דריסה ידנית מדויקת אם המשתמש הזין אותה,
+    // אחרת המרה אוטומטית לפי השער. הדריסה חלה רק על החזקה שאינה שקלית.
+    const amountBase = (currency !== BASE_CURRENCY && hasIlsOverride(h))
+      ? parseFloat(h.ilsOverride)
+      : toBase(amount, currency);
     return {
-      ...res, amount, currency,
-      amountBase: toBase(amount, currency),   // הכל מומר לשקלים לפני שקילה
+      ...res, amount, currency, amountBase,
       color: PALETTE[i % PALETTE.length],
     };
   }).filter(Boolean);
@@ -412,7 +430,9 @@ function renderRows() {
                  ${res.verified ? `<span class="hm-badge" title="${T.verified}">✓</span>` : ""}
                  ${res.fee != null ? `<span class="hm-fee">${res.fee}%</span>` : ""}
                  ${cur !== BASE_CURRENCY && parseFloat(h.amount) > 0
-                   ? `<span class="hm-conv">≈ ${fmt(toBase(parseFloat(h.amount), cur))}</span>` : ""}
+                   ? `<span class="hm-conv">≈ <input type="number" class="hils" min="0" step="any"
+                        inputmode="decimal" value="${ilsDisplay(h, cur)}"
+                        title="${T.ilsLabel}" aria-label="${T.ilsLabel}"> ₪</span>` : ""}
                </div>` : ""}
       ${unknown ? `<div class="holding-unknown">
                      <label>${T.unknownPrompt}</label>
@@ -432,19 +452,30 @@ function renderRows() {
     row.querySelector(".hamt").addEventListener("input", (e) => {
       if (parseFloat(e.target.value) < 0) e.target.value = "0";
       holdings[i].amount = e.target.value;
+      // עריכת הסכום המקורי (בדולרים) מבטלת דריסה ידנית קודמת של השקלים,
+      // כדי שההמרה תחושב מחדש לפי השער ותשקף את הסכום החדש.
+      holdings[i].ilsOverride = "";
       // בלי renderRows: input[type=number] לא תומך ב-setSelectionRange, ולכן
       // בנייה מחדש של השורה הייתה מאבדת את הסמן ומהפכת את סדר הספרות.
-      // מרעננים רק את תווית ההמרה, במקום.
+      // מרעננים רק את שדה ההמרה, במקום.
       refreshConversion(row, i);
+      update();
+    });
+    // עריכה ידנית של השווי בשקלים — דריסה מדויקת של ההמרה האוטומטית
+    const ilsInp = row.querySelector(".hils");
+    if (ilsInp) ilsInp.addEventListener("input", (e) => {
+      if (parseFloat(e.target.value) < 0) e.target.value = "0";
+      holdings[i].ilsOverride = e.target.value;
       update();
     });
     row.querySelector(".hcur").addEventListener("change", (e) => {
       holdings[i].currency = e.target.value;
+      holdings[i].ilsOverride = "";   // מעבר בין מטבעות מאפס דריסה ידנית
       renderRows(); update();
     });
     row.querySelector(".asset-del").addEventListener("click", () => {
       holdings.splice(i, 1);
-      if (!holdings.length) holdings.push({ query: "", amount: "", manualIndex: "" });
+      if (!holdings.length) holdings.push(blankRow());
       renderRows(); update();
     });
     const sel = row.querySelector(".hidx");
@@ -493,7 +524,8 @@ function restoreFocus() {
   }
 }
 
-/* ריענון נקודתי של תווית ההמרה לשקלים, בלי לבנות מחדש את השורה. */
+/* ריענון נקודתי של שדה ההמרה לשקלים, בלי לבנות מחדש את השורה.
+   נקרא בזמן הקלדה בשדה הסכום — לכן חייב לשמר את הסמן בשדה הסכום ולא לרנדר. */
 function refreshConversion(row, i) {
   const meta = row.querySelector(".holding-meta");
   if (!meta) return;
@@ -506,9 +538,18 @@ function refreshConversion(row, i) {
     if (!el) {
       el = document.createElement("span");
       el.className = "hm-conv";
+      el.innerHTML = `≈ <input type="number" class="hils" min="0" step="any" inputmode="decimal"
+        title="${T.ilsLabel}" aria-label="${T.ilsLabel}"> ₪`;
       meta.appendChild(el);
+      // מקשרים את המאזין לשדה שנוצר עכשיו (השורה עצמה לא רונדרה מחדש)
+      el.querySelector(".hils").addEventListener("input", (ev) => {
+        if (parseFloat(ev.target.value) < 0) ev.target.value = "0";
+        holdings[i].ilsOverride = ev.target.value;
+        update();
+      });
     }
-    el.textContent = "≈ " + fmt(toBase(amount, cur));
+    // הסכום זה עתה שונה → הדריסה אופסה ע"י הקורא; מציגים את הערך המחושב
+    el.querySelector(".hils").value = Math.round(toBase(amount, cur));
   } else if (el) {
     el.remove();
   }
