@@ -650,3 +650,61 @@ html[dir="ltr"] .prose ol { padding-inline-start: 22px; }
 }
 .holding-explain .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; margin-top: 6px; }
 .holding-explain strong { color: var(--ink); }
+
+/* =========================================================
+   גלגל היתרונות בדף הבית (index.html)
+   בלי JS: רשימה קריאה רגילה. עם JS (.bw-ready): עוגה + פירוט מתחלף.
+   ========================================================= */
+.benefits-wheel { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: center; }
+.bw-chart { display: none; }                 /* מופיע רק כשה-JS הפעיל את השכבה */
+.benefits-wheel.bw-ready { grid-template-columns: 330px 1fr; gap: 52px; }
+.benefits-wheel.bw-ready .bw-chart { display: block; position: relative; }
+
+.bw-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.bw-seg {
+  cursor: pointer; opacity: .34;
+  transition: opacity .28s ease, transform .28s ease;
+}
+.bw-seg:hover, .bw-seg.on { opacity: 1; transform: translate(var(--dx), var(--dy)); }
+.bw-seg:focus-visible { opacity: 1; stroke: var(--ink); stroke-width: 2.5; }
+
+.bw-center { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.bw-center-ico {
+  width: 56px; height: 56px;
+  color: var(--bw-active, var(--blue));
+  transition: color .28s ease;
+}
+
+.bw-list { list-style: none; display: grid; gap: 6px; margin: 0; padding: 0; }
+.bw-item { border-radius: 12px; transition: background .2s ease; }
+.bw-btn {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  background: none; border: 0; cursor: pointer; font-family: inherit;
+  padding: 11px 12px; border-radius: 12px; text-align: start; color: var(--ink);
+}
+.bw-ico {
+  display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto;
+  color: var(--muted); transition: color .2s ease;
+}
+.bw-ico svg { width: 24px; height: 24px; }
+.bw-t { font-weight: 700; font-size: 1.05rem; }
+.bw-d {
+  color: var(--muted); margin: 0;
+  padding-inline-start: 54px; padding-inline-end: 12px; padding-bottom: 12px;
+}
+.bw-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* מצב מופעל: רק ההסבר של הפריט הפעיל מוצג */
+.benefits-wheel.bw-ready .bw-d { display: none; }
+.benefits-wheel.bw-ready .bw-item.active .bw-d { display: block; }
+.benefits-wheel.bw-ready .bw-item.active { background: var(--bg-soft); }
+.benefits-wheel.bw-ready .bw-item.active .bw-ico,
+.benefits-wheel.bw-ready .bw-item.active .bw-t { color: var(--bw-active, var(--blue)); }
+
+@media (max-width: 860px) {
+  .benefits-wheel.bw-ready { grid-template-columns: 1fr; gap: 26px; }
+  .benefits-wheel.bw-ready .bw-chart { max-width: 290px; margin-inline: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bw-seg, .bw-center-ico, .bw-item, .bw-ico { transition: none; }
+}

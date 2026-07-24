@@ -116,37 +116,61 @@
           <h2>כל הכסף שלך, בתמונה אחת</h2>
           <p>במקום לרדוף אחרי מספרים בעשר אפליקציות שונות – הכל מתכנס למקום אחד.</p>
         </div>
-        <div class="grid grid-3">
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
-            <h3>תצוגה ויזואלית</h3>
-            <p>גרף עוגה אינטראקטיבי שמראה מיד ממה מורכב ההון העצמי שלך ובאיזה משקל.</p>
+        <!-- גלגל היתרונות: עוגה מפוצלת ל-6 פלחים אינטראקטיביים.
+             התוכן קיים כרשימה סמנטית גם בלי JS; ה-JS מוסיף את הגרף ואת ההחלפה. -->
+        <div class="benefits-wheel" id="benefits-wheel">
+          <div class="bw-chart">
+            <svg class="bw-svg" viewBox="0 0 320 320" aria-hidden="true"></svg>
+            <span class="bw-center">
+              <svg class="bw-center-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+            </span>
           </div>
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
-            <h3>כל סוגי הנכסים</h3>
-            <p>עו״ש, גמל, פנסיה, קרן השתלמות, מסחר עצמאי, נדל״ן – הכל במקום אחד.</p>
-          </div>
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
-            <h3>פרטי לחלוטין</h3>
-            <p>החישוב מתבצע בדפדפן שלך. שום נתון פיננסי לא נשלח או נשמר בשרת חיצוני.</p>
-          </div>
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-            <h3>מהיר ופשוט</h3>
-            <p>בלי הרשמה ובלי סיסמאות. נכנסים, מזינים, ומקבלים תשובה תוך דקה.</p>
-          </div>
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
-            <h3>פרספקטיבה</h3>
-            <p>הבנה ברורה של המצב הפיננסי שלך – בסיס לקבלת החלטות טובות יותר.</p>
-          </div>
-          <div class="card">
-            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="url(#icoGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-            <h3>בעברית, בשבילך</h3>
-            <p>ממשק נוח ואינטראקטיבי בשפה העברית.</p>
-          </div>
+
+          <ul class="bw-list">
+            <li class="bw-item" data-color="#4f46e5">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></span>
+                <span class="bw-t">תצוגה ויזואלית</span>
+              </button>
+              <p class="bw-d">גרף עוגה אינטראקטיבי שמראה מיד ממה מורכב ההון העצמי שלך ובאיזה משקל.</p>
+            </li>
+            <li class="bw-item" data-color="#14b8a6">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+                <span class="bw-t">כל סוגי הנכסים</span>
+              </button>
+              <p class="bw-d">עו״ש, גמל, פנסיה, קרן השתלמות, מסחר עצמאי, נדל״ן – הכל במקום אחד.</p>
+            </li>
+            <li class="bw-item" data-color="#f59e0b">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+                <span class="bw-t">פרטי לחלוטין</span>
+              </button>
+              <p class="bw-d">החישוב מתבצע בדפדפן שלך. שום נתון פיננסי לא נשלח או נשמר בשרת חיצוני.</p>
+            </li>
+            <li class="bw-item" data-color="#ec4899">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                <span class="bw-t">מהיר ופשוט</span>
+              </button>
+              <p class="bw-d">בלי הרשמה ובלי סיסמאות. נכנסים, מזינים, ומקבלים תשובה תוך דקה.</p>
+            </li>
+            <li class="bw-item" data-color="#22c55e">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+                <span class="bw-t">פרספקטיבה</span>
+              </button>
+              <p class="bw-d">הבנה ברורה של המצב הפיננסי שלך – בסיס לקבלת החלטות טובות יותר.</p>
+            </li>
+            <li class="bw-item" data-color="#8b5cf6">
+              <button class="bw-btn" type="button">
+                <span class="bw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+                <span class="bw-t">בעברית, בשבילך</span>
+              </button>
+              <p class="bw-d">ממשק נוח ואינטראקטיבי בשפה העברית.</p>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
